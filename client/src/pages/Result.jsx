@@ -93,12 +93,20 @@ const Result = () => {
                     </div>
 
                     {/* CTA */}
-                    <button
-                        onClick={() => navigate('/moodboard')}
-                        className="btn-primary text-lg px-12 py-4"
-                    >
-                        Generate My Mood Board
-                    </button>
+                    <div className="flex flex-col space-y-4">
+                        <button
+                            onClick={() => navigate('/aesthetic-report')}
+                            className="bg-black text-white text-lg px-12 py-4 rounded-full border border-white/20 hover:bg-black/80 transition-all flex items-center justify-center space-x-2"
+                        >
+                            <span>✨ View Full Aesthetic Report</span>
+                        </button>
+                        <button
+                            onClick={() => navigate('/moodboard')}
+                            className="btn-primary text-lg px-12 py-4"
+                        >
+                            Generate My Mood Board
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Stepper, { Step } from '../components/ui/Stepper';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Register = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(false);
 
     const handleChange = (e) => {
         setFormData(prev => ({
@@ -39,14 +41,68 @@ const Register = () => {
         setLoading(true);
 
         try {
-            await register(formData.name, formData.email, formData.password, 'single');
-            navigate('/mode-select');
+            const registrationSuccess = await register(formData.name, formData.email, formData.password, 'single');
+            if (registrationSuccess) {
+                setIsRegistered(true);
+            }
         } catch (error) {
             setError(error.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
     };
+
+    const handleStepperFinish = () => {
+        navigate('/quiz');
+    };
+
+    if (isRegistered) {
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <h2 className="text-4xl font-display font-bold text-primary mb-2">
+                        Welcome, {formData.name}!
+                    </h2>
+                    <p className="text-gray-400">Let's get your profile ready</p>
+                </div>
+
+                <Stepper
+                    onFinalStepCompleted={handleStepperFinish}
+                    finishButtonText="Start Quiz"
+                    nextButtonText="Next Step"
+                >
+                    <Step>
+                        <div className="space-y-4">
+                            <div className="text-5xl mb-4">🎉</div>
+                            <h2 className="text-2xl font-bold">Account Created!</h2>
+                            <p>You're now part of the VibeSpace community. Ready to find your perfect aesthetic?</p>
+                        </div>
+                    </Step>
+                    <Step>
+                        <div className="space-y-4">
+                            <div className="text-5xl mb-4">🎨</div>
+                            <h2 className="text-2xl font-bold">Personalize Your Feed</h2>
+                            <p>VibeSpace uses AI to curate products based on your unique style. No more generic catalogs.</p>
+                        </div>
+                    </Step>
+                    <Step>
+                        <div className="space-y-4">
+                            <div className="text-5xl mb-4">👥</div>
+                            <h2 className="text-2xl font-bold">Single or Group Mode?</h2>
+                            <p>Design your own room or invite friends/partners to merge your aesthetics into a shared profile.</p>
+                        </div>
+                    </Step>
+                    <Step>
+                        <div className="space-y-4">
+                            <div className="text-5xl mb-4">🔍</div>
+                            <h2 className="text-2xl font-bold">Know Your Vibe</h2>
+                            <p>Our 25-question visual quiz is the final step. It decrypts your design personality instantly.</p>
+                        </div>
+                    </Step>
+                </Stepper>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

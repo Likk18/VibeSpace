@@ -1,0 +1,22 @@
+.spotlight-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    height: 100%;
+}
+
+.spotlight-card-glow {
+    pointer-events: none;
+    position: absolute;
+    inset: -1px;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+.spotlight-card-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+}
