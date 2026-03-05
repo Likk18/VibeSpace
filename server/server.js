@@ -43,7 +43,13 @@ app.use(helmet());
 
 // CORS configuration (Must be before rate limiter)
 app.use(cors({
-    origin: [process.env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
+    origin: [
+        process.env.CLIENT_URL,
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        /\.vercel\.app$/ // Allow all Vercel subdomains
+    ],
     credentials: true
 }));
 

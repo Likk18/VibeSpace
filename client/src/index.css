@@ -9,34 +9,34 @@
     @apply font-sans bg-background text-light antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display;
   }
 }
 
 @layer components {
+
   /* Button Styles */
   .btn-primary {
-    @apply bg-primary text-white px-6 py-3 rounded-lg font-medium 
-           hover:bg-primary/90 transition-all duration-200 
-           shadow-md hover:shadow-lg;
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-all duration-200 shadow-md hover:shadow-lg;
   }
 
   .btn-secondary {
-    @apply bg-transparent border-2 border-primary text-primary px-6 py-3 
-           rounded-lg font-medium hover:bg-primary hover:text-white 
-           transition-all duration-200;
+    @apply bg-transparent border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium hover:bg-primary hover:text-white transition-all duration-200;
   }
 
   .btn-accent {
-    @apply bg-accent text-white px-6 py-3 rounded-lg font-medium 
-           hover:bg-accent/90 transition-all duration-200;
+    @apply bg-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-accent/90 transition-all duration-200;
   }
 
   /* Card Styles */
   .card {
-    @apply bg-surface rounded-xl shadow-md hover:shadow-xl hover:shadow-primary/5
-           transition-shadow duration-300 overflow-hidden;
+    @apply bg-surface rounded-xl shadow-md hover:shadow-xl hover:shadow-primary/5 transition-shadow duration-300 overflow-hidden;
   }
 
   .card-hover {
@@ -45,9 +45,7 @@
 
   /* Input Styles */
   .input {
-    @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg 
-           focus:outline-none focus:ring-2 focus:ring-primary/50 text-light
-           focus:border-primary transition-all placeholder:text-muted;
+    @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-light focus:border-primary transition-all placeholder:text-muted;
   }
 
   /* Glassmorphism Effect */
@@ -57,14 +55,12 @@
 
   /* Style Chip */
   .style-chip {
-    @apply inline-block px-3 py-1 bg-primary/10 text-primary 
-           rounded-full text-sm font-medium;
+    @apply inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium;
   }
 
   /* Match Score Badge */
   .match-badge {
-    @apply inline-flex items-center px-2 py-1 bg-green-500/20 
-           text-green-400 rounded-md text-xs font-semibold;
+    @apply inline-flex items-center px-2 py-1 bg-green-500/20 text-green-400 rounded-md text-xs font-semibold;
   }
 }
 
@@ -93,7 +89,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -116,5 +112,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

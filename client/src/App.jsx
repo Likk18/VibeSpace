@@ -18,6 +18,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AestheticReport from './pages/AestheticReport';
 import Checkout from './pages/Checkout';
+import Settings from './pages/Settings';
+import VibePay from './pages/VibePay';
+import Orders from './pages/Orders';
+import Security from './pages/Security';
+import FAQ from './pages/FAQ';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -141,6 +146,42 @@ function AppContent() {
                                 <Cart />
                             </ProtectedRoute>
                         }
+                    />
+                    <Route
+                        path="/settings"
+                        element={
+                            <ProtectedRoute>
+                                <Settings />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/vibepay"
+                        element={
+                            <ProtectedRoute>
+                                <VibePay />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/orders"
+                        element={
+                            <ProtectedRoute>
+                                <Orders />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/security"
+                        element={
+                            <ProtectedRoute>
+                                <Security />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/faq"
+                        element={<FAQ />}
                     />
                     <Route
                         path="/wishlist"

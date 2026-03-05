@@ -1,0 +1,98 @@
+.security-container {
+    min-height: 100vh;
+    background-color: #000000;
+    color: #f1f2f4;
+    padding-bottom: 5rem;
+}
+
+.security-max-width {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.security-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.security-row {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.security-row:last-child {
+    border-bottom: none;
+}
+
+.security-row label {
+    display: block;
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+    color: #ffffff;
+}
+
+.security-row-content {
+    flex-grow: 1;
+    padding-right: 2rem;
+}
+
+.security-row-content span {
+    color: #f1f2f4;
+    font-size: 0.9rem;
+}
+
+.security-row-content p {
+    color: #9ca3af;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.security-edit-btn {
+    background: #ffffff;
+    color: #000;
+    border: 1px solid #d5d9d9;
+    padding: 0.4rem 2rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    transition: background 0.2s;
+}
+
+.security-edit-btn:hover {
+    background: #f7fafa;
+}
+
+.security-alert {
+    background: rgba(255, 140, 0, 0.05);
+    border: 1px solid rgba(255, 140, 0, 0.2);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.security-alert-icon {
+    color: rgb(255, 136, 0);
+    font-size: 1.2rem;
+}
+
+.security-alert-text {
+    font-size: 0.8rem;
+    color: #f1f2f4;
+}
+
+.security-alert-text b {
+    color: #00d4ff;
+    cursor: pointer;
+}

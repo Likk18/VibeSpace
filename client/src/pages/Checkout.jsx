@@ -168,7 +168,7 @@ const Checkout = () => {
 
                                 <div className="payment-box">
                                     {[
-                                        { id: 'upi', label: 'Amazon Pay UPI', sub: 'Linked Bank Account ..5771' },
+                                        { id: 'upi', label: 'VibePay UPI', sub: 'Linked Bank Account ..5771' },
                                         { id: 'card', label: 'Credit or debit card', sub: 'All major cards accepted' },
                                         { id: 'cod', label: 'Cash on Delivery', sub: 'Pay at your doorstep' }
                                     ].map(opt => (

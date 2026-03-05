@@ -9,8 +9,8 @@ export default {
             colors: {
                 primary: '#8B5CF6',      // Violet-500 for better contrast on dark
                 accent: '#E8845A',       // Terracotta
-                background: '#09090B',   // Zinc-950 for background
-                surface: '#18181B',      // Zinc-900 for cards, nav, etc
+                background: '#000000',   // Pitch black background
+                surface: '#080808',      // Very dark near-black for surface
                 light: '#FAFAFA',        // Zinc-50 for primary text
                 muted: '#A1A1AA',        // Zinc-400 for muted text
             },

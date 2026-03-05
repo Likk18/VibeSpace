@@ -1,14 +1,14 @@
 /* VibeSpace Dark Amazon-Style Checkout */
 .checkout-container {
     min-height: 100vh;
-    background-color: #020008;
+    background-color: #000000;
     color: #f1f2f4;
     font-family: inherit;
     /* Keep VibeSpace fonts */
 }
 
 .checkout-header {
-    background-color: #131921;
+    background-color: #000000;
     /* Dark header like Amazon but integrated */
     padding: 1rem 2rem;
     display: flex;
@@ -53,7 +53,7 @@
 
 /* Amazon-style Section Styling */
 .checkout-section {
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     margin-bottom: 1rem;
@@ -255,7 +255,7 @@
 }
 
 .modal-window {
-    background: #111;
+    background: #050505;
     width: 100%;
     max-width: 500px;
     padding: 2rem;
@@ -265,7 +265,7 @@
 
 .input-field {
     width: 100%;
-    background: #222;
+    background: #0a0a0a;
     border: 1px solid #444;
     border-radius: 4px;
     padding: 0.5rem;

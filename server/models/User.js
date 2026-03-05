@@ -60,6 +60,31 @@ const userSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    addresses: [{
+        name: String,
+        street: String,
+        area: String,
+        city: String,
+        state: String,
+        pincode: String,
+        tag: {
+            type: String,
+            enum: ['Home', 'Work', 'Studio', 'Other'],
+            default: 'Home'
+        },
+        is_default: {
+            type: Boolean,
+            default: false
+        }
+    }],
+    phone: {
+        type: String,
+        trim: true
+    },
+    vibepay_balance: {
+        type: Number,
+        default: 0
+    },
     created_at: {
         type: Date,
         default: Date.now
