@@ -15,6 +15,13 @@ const AestheticReport = () => {
         );
     }
 
+    // Convert hex to RGB for glow effect (assuming primary style color)
+    const primaryHex = profile.color_palette[0] || '#8400FF';
+    const r = parseInt(primaryHex.slice(1, 3), 16);
+    const g = parseInt(primaryHex.slice(3, 5), 16);
+    const b = parseInt(primaryHex.slice(5, 7), 16);
+    const glowColor = `${r}, ${g}, ${b}`;
+
     // Map profile data to MagicBento cardData (6 items)
     const cardData = [
         {
@@ -61,13 +68,6 @@ const AestheticReport = () => {
             }
         }
     ];
-
-    // Convert hex to RGB for glow effect (assuming primary style color)
-    const primaryHex = profile.color_palette[0] || '#8400FF';
-    const r = parseInt(primaryHex.slice(1, 3), 16);
-    const g = parseInt(primaryHex.slice(3, 5), 16);
-    const b = parseInt(primaryHex.slice(5, 7), 16);
-    const glowColor = `${r}, ${g}, ${b}`;
 
     return (
         <div className="min-h-screen bg-[#020008] text-white py-20 px-4 overflow-x-hidden">
