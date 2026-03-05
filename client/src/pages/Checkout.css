@@ -1,0 +1,275 @@
+/* VibeSpace Dark Amazon-Style Checkout */
+.checkout-container {
+    min-height: 100vh;
+    background-color: #020008;
+    color: #f1f2f4;
+    font-family: inherit;
+    /* Keep VibeSpace fonts */
+}
+
+.checkout-header {
+    background-color: #131921;
+    /* Dark header like Amazon but integrated */
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.checkout-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #8400ff, #00d4ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+}
+
+.secure-tag {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #9ca3af;
+}
+
+.checkout-main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .checkout-main {
+        grid-template-columns: 3fr 1fr;
+    }
+}
+
+/* Amazon-style Section Styling */
+.checkout-section {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.section-collapsed {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.section-expanded {
+    padding: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    gap: 1rem;
+}
+
+.section-number {
+    color: #8400ff;
+    /* VibeSpace Purple */
+}
+
+.change-link {
+    color: #00d4ff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.change-link:hover {
+    text-decoration: underline;
+}
+
+/* Address Box */
+.address-item {
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.address-item.selected {
+    border-color: #8400ff;
+    background: rgba(132, 0, 255, 0.05);
+}
+
+.address-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #9ca3af;
+}
+
+.address-tag.home {
+    background: rgba(132, 0, 255, 0.2);
+    color: #8400ff;
+}
+
+/* Payment Methods (Amazon Style) */
+.payment-box {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.payment-option {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.payment-option:last-child {
+    border-bottom: none;
+}
+
+.radio-btn {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    margin-top: 2px;
+    position: relative;
+    cursor: pointer;
+}
+
+.radio-btn:checked {
+    border-color: #00d3ff;
+}
+
+.radio-btn:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #00d3ff;
+    border-radius: 50%;
+}
+
+/* Sidebar Sidebar Summary */
+.sidebar-summary {
+    position: sticky;
+    top: 5rem;
+    height: fit-content;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.amazon-btn-primary {
+    width: 100%;
+    background-color: #ffd814;
+    color: #000000;
+    border: 1px solid #fcd200;
+    border-radius: 50px;
+    /* Rounded pill like Amazon */
+    padding: 0.6rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.amazon-btn-primary:hover:not(:disabled) {
+    background-color: #f7ca00;
+}
+
+.amazon-btn-secondary {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #b12704;
+    /* Amazon-style red total, but readable on dark */
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modal for Address */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.modal-window {
+    background: #111;
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.input-field {
+    width: 100%;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 0.5rem;
+    color: white;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+}

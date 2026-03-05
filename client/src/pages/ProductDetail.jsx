@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { productsAPI } from '../services/api';
 import { useProfile } from '../context/ProfileContext';
+import WishlistDropdown from '../components/products/WishlistDropdown';
 import StyleChip from '../components/ui/StyleChip';
 import ProductCard from '../components/products/ProductCard';
 
 const ProductDetail = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { profile, addToCart, cart, addToWishlist, wishlist } = useProfile();
     const [product, setProduct] = useState(null);
     const [similarProducts, setSimilarProducts] = useState([]);
@@ -153,26 +155,27 @@ const ProductDetail = () => {
                                 disabled={!product.in_stock}
                                 onClick={async () => {
                                     await addToCart(product._id);
-                                    alert('Added to Cart!');
                                 }}
                                 className={`btn-primary flex-1 py-4 text-lg ${!product.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                {cart.includes(product._id) ? 'Add Another to Cart' : 'Add to Cart'}
+                                {cart.some(id => id === product._id || id?._id === product._id) ? 'Add Another to Cart' : 'Add to Cart'}
                             </button>
 
                             <button
-                                onClick={async () => {
-                                    const folder = window.prompt("Enter a folder name (e.g. Living Room), or leave blank for 'General':") ?? 'General';
-                                    await addToWishlist(product._id, folder || 'General');
-                                    alert(`Saved to ${folder || 'General'} wishlist!`);
-                                }}
-                                className="btn-secondary py-4 px-6 flex items-center justify-center gap-2"
+                                disabled={!product.in_stock}
+                                onClick={() => navigate('/checkout', { state: { product } })}
+                                className={`bg-white text-black border border-gray-300 font-bold px-8 py-4 rounded-lg hover:bg-gray-50 flex-1 ${!product.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                <svg className="w-6 h-6" fill={wishlist.some(w => w.product === product._id || w.product._id === product._id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                Save
+                                Buy Now
                             </button>
+
+                            <div className="flex items-center">
+                                <WishlistDropdown
+                                    productId={product._id}
+                                    onAdd={addToWishlist}
+                                    wishlist={wishlist}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

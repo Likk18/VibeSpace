@@ -14,9 +14,11 @@ const Wishlist = () => {
             if (!acc[folderName]) {
                 acc[folderName] = [];
             }
-            // The product object might be nested inside item.product
-            const productData = item.product?._id ? item.product : item.product;
-            if (productData) acc[folderName].push(productData);
+            // Ensure we have a valid product object
+            const productData = item.product;
+            if (productData && typeof productData === 'object') {
+                acc[folderName].push(productData);
+            }
             return acc;
         }, {});
     }, [wishlist]);

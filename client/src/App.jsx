@@ -17,6 +17,7 @@ import Wishlist from './pages/Wishlist';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AestheticReport from './pages/AestheticReport';
+import Checkout from './pages/Checkout';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -98,6 +99,14 @@ function AppContent() {
                         element={
                             <ProtectedRoute>
                                 <AestheticReport />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <ProtectedRoute>
+                                <Checkout />
                             </ProtectedRoute>
                         }
                     />
