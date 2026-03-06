@@ -38,13 +38,11 @@ const Quiz = () => {
         );
         setSelectedOption(optionIndex);
 
-        // Save response
+        // Save response — only track style (vibe)
         const newResponses = [...responses];
         newResponses[currentIndex] = {
             questionId: questions[currentIndex]._id,
-            selectedStyle: option.style_tag,
-            selectedColor: option.color_tag,
-            selectedMaterial: option.material_tag
+            selectedStyle: option.style_tag
         };
         setResponses(newResponses);
     };
@@ -88,9 +86,7 @@ const Quiz = () => {
         const newResponses = [...responses];
         newResponses[currentIndex] = {
             questionId: questions[currentIndex]._id,
-            selectedStyle: null,
-            selectedColor: null,
-            selectedMaterial: null
+            selectedStyle: null
         };
         setResponses(newResponses);
         setSelectedOption(null);

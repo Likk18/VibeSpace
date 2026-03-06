@@ -24,11 +24,6 @@ export const calculateMatchScore = (product, profile) => {
         score += MATCH_WEIGHTS.COLOR_MATCH;
     }
 
-    // Material match (+2)
-    if (product.material_tag === profile.dominant_material) {
-        score += MATCH_WEIGHTS.MATERIAL_MATCH;
-    }
-
     return score;
 };
 

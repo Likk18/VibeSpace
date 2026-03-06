@@ -4,16 +4,77 @@ import { useProfile } from '../context/ProfileContext';
 import StyleChip from '../components/ui/StyleChip';
 import ColorSwatch from '../components/moodboard/ColorSwatch';
 
+/**
+ * Map style tags to asset folder names for the aesthetic board
+ */
+const STYLE_TO_FOLDER = {
+    'minimalist': 'Minimalist',
+    'bohemian': 'Bohemian',
+    'scandinavian': 'Scandinavian',
+    'industrial': 'Industrial',
+    'modern-luxury': 'ModernLuxury',
+    'traditional': 'Traditional',
+    'maximalist': 'Maximalist'
+};
+
+/**
+ * Category folders that reliably exist across all vibes, with approx image counts
+ */
+const BOARD_CATEGORIES = [
+    { folder: 'Bedroom 20', max: 20 },
+    { folder: 'Object 20', max: 20 },
+    { folder: 'Overall Room 6', max: 6 },
+    { folder: 'DIY 8', max: 8 },
+    { folder: 'Lamp Fixtures 6', max: 6 },
+    { folder: 'Rug 6', max: 6 }
+];
+
+/**
+ * Get random image URLs for the aesthetic board
+ */
+const getRandomImages = (vibeFolder, count = 8) => {
+    const images = [];
+
+    // Pick one random image from each category
+    const shuffledCats = [...BOARD_CATEGORIES].sort(() => Math.random() - 0.5);
+
+    for (const cat of shuffledCats) {
+        if (images.length >= count) break;
+        const imgNum = Math.floor(Math.random() * cat.max) + 1;
+        images.push(`/assets/${vibeFolder}/${encodeURIComponent(cat.folder)}/${imgNum}.jpg`);
+    }
+
+    // If we need more, pick extras from the large categories (Bedroom, Object have 20)
+    const largeCats = BOARD_CATEGORIES.filter(c => c.max >= 20);
+    while (images.length < count) {
+        const cat = largeCats[Math.floor(Math.random() * largeCats.length)];
+        const imgNum = Math.floor(Math.random() * cat.max) + 1;
+        const url = `/assets/${vibeFolder}/${encodeURIComponent(cat.folder)}/${imgNum}.jpg`;
+        if (!images.includes(url)) {
+            images.push(url);
+        }
+    }
+
+    return images;
+};
+
 const Result = () => {
     const navigate = useNavigate();
     const { profile, loading } = useProfile();
     const [revealed, setRevealed] = useState(false);
+    const [boardImages, setBoardImages] = useState([]);
 
     useEffect(() => {
-        // Trigger reveal animation after component mounts
         const timer = setTimeout(() => setRevealed(true), 300);
         return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if (profile?.primary_style) {
+            const vibeFolder = STYLE_TO_FOLDER[profile.primary_style] || 'Minimalist';
+            setBoardImages(getRandomImages(vibeFolder, 9));
+        }
+    }, [profile?.primary_style]);
 
     if (loading || !profile) {
         return (
@@ -33,9 +94,14 @@ const Result = () => {
         window.open(urls[platform], '_blank');
     };
 
+    const formatStyle = (styleStr) => {
+        if (!styleStr) return '';
+        return styleStr.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 py-12">
-            <div className="max-w-3xl mx-auto px-4">
+            <div className="max-w-4xl mx-auto px-4">
                 {/* Reveal Animation */}
                 <div className={`text-center transition-all duration-1000 ${revealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                     {/* Header */}
@@ -46,10 +112,39 @@ const Result = () => {
                         </h1>
                         {profile.secondary_style && (
                             <p className="text-xl text-gray-400">
-                                with {profile.secondary_style.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} influence
+                                with {formatStyle(profile.secondary_style)} influence
                             </p>
                         )}
                     </div>
+
+                    {/* Aesthetic Board */}
+                    {boardImages.length > 0 && (
+                        <div className="bg-surface rounded-2xl shadow-xl p-6 mb-8">
+                            <h2 className="text-2xl font-display font-semibold mb-6">Your Aesthetic Board</h2>
+                            <div className="grid grid-cols-3 gap-2 md:gap-3 rounded-xl overflow-hidden">
+                                {boardImages.map((src, index) => (
+                                    <div
+                                        key={index}
+                                        className={`
+                                            relative overflow-hidden rounded-lg
+                                            ${index === 0 ? 'col-span-2 row-span-2' : ''}
+                                            ${index === 4 ? 'col-span-2' : ''}
+                                        `}
+                                        style={{
+                                            animationDelay: `${index * 100}ms`
+                                        }}
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`${profile.primary_style} inspiration ${index + 1}`}
+                                            className="w-full h-full object-cover aspect-square hover:scale-110 transition-transform duration-500"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Color Palette */}
                     <div className="bg-surface rounded-2xl shadow-xl p-8 mb-8">
@@ -61,11 +156,10 @@ const Result = () => {
                         </div>
                     </div>
 
-                    {/* Materials */}
+                    {/* Style Info */}
                     <div className="bg-surface rounded-2xl shadow-xl p-8 mb-8">
-                        <h2 className="text-2xl font-display font-semibold mb-4">Your Materials</h2>
+                        <h2 className="text-2xl font-display font-semibold mb-4">Your Style</h2>
                         <div className="flex justify-center flex-wrap gap-3">
-                            <StyleChip style={profile.dominant_material} size="lg" />
                             <StyleChip style={profile.primary_style} size="lg" />
                             {profile.secondary_style && (
                                 <StyleChip style={profile.secondary_style} size="lg" />

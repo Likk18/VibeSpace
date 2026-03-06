@@ -45,7 +45,8 @@ export const authAPI = {
 export const quizAPI = {
     getQuestions: () => api.get('/quiz/questions'),
     submitQuiz: (responses) => api.post('/quiz/submit', { responses }),
-    getStatus: () => api.get('/quiz/status')
+    getStatus: () => api.get('/quiz/status'),
+    retake: () => api.post('/quiz/retake')
 };
 
 // Group API

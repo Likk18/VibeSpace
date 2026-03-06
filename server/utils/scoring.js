@@ -1,8 +1,21 @@
 import { QUIZ_WEIGHTS, COLOR_ADJECTIVES, STYLE_PALETTES } from '../config/constants.js';
 
 /**
+ * Map each vibe to a default color association for palette generation
+ */
+const VIBE_COLOR_MAP = {
+    'minimalist': 'neutral',
+    'bohemian': 'earthy',
+    'scandinavian': 'cool',
+    'industrial': 'dark',
+    'modern-luxury': 'warm-metallic',
+    'traditional': 'earthy',
+    'maximalist': 'bold'
+};
+
+/**
  * Calculate style profile from quiz responses
- * @param {Array} responses - Array of 25 quiz responses
+ * @param {Array} responses - Array of quiz responses
  * @returns {Object} Complete style profile
  */
 export const calculateStyleProfile = (responses) => {
@@ -17,24 +30,11 @@ export const calculateStyleProfile = (responses) => {
         maximalist: 0
     };
 
-    const colorScore = {};
-    const materialScore = {};
-
     // Calculate scores from responses
     responses.forEach(response => {
         if (response.selected_style) {
             styleScore[response.selected_style] =
                 (styleScore[response.selected_style] || 0) + QUIZ_WEIGHTS.STYLE;
-        }
-
-        if (response.selected_color) {
-            colorScore[response.selected_color] =
-                (colorScore[response.selected_color] || 0) + QUIZ_WEIGHTS.COLOR;
-        }
-
-        if (response.selected_material) {
-            materialScore[response.selected_material] =
-                (materialScore[response.selected_material] || 0) + QUIZ_WEIGHTS.MATERIAL;
         }
     });
 
@@ -45,12 +45,8 @@ export const calculateStyleProfile = (responses) => {
     const [primaryStyle, primaryScore] = sortedStyles[0];
     const [secondaryStyle, secondaryScore] = sortedStyles[1] || [null, 0];
 
-    // Find dominant color and material
-    const dominantColor = Object.keys(colorScore).reduce((a, b) =>
-        colorScore[a] > colorScore[b] ? a : b, 'neutral');
-
-    const dominantMaterial = Object.keys(materialScore).reduce((a, b) =>
-        materialScore[a] > materialScore[b] ? a : b, 'wood');
+    // Derive dominant color from the primary style's color association
+    const dominantColor = VIBE_COLOR_MAP[primaryStyle] || 'neutral';
 
     // Generate hybrid label
     let styleLabel;
@@ -76,13 +72,10 @@ export const calculateStyleProfile = (responses) => {
 
     return {
         raw_scores: styleScore,
-        color_scores: colorScore,
-        material_scores: materialScore,
         primary_style: primaryStyle,
         secondary_style: secondaryStyle,
         style_label: styleLabel,
         dominant_color: dominantColor,
-        dominant_material: dominantMaterial,
         color_palette: colorPalette
     };
 };

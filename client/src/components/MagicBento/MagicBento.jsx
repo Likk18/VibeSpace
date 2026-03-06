@@ -465,7 +465,6 @@ const MagicBento = ({
                 {cardData.map((card, index) => {
                     const baseClassName = `magic-bento-card ${textAutoHide ? 'magic-bento-card--text-autohide' : ''} ${enableBorderGlow ? 'magic-bento-card--border-glow' : ''}`;
                     const cardProps = {
-                        key: index,
                         className: baseClassName,
                         style: {
                             backgroundColor: card.color || '#060010',

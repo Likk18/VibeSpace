@@ -69,9 +69,5 @@ export const quizSubmitValidation = [
 
     body('responses.*.selectedColor')
         .optional({ nullable: true })
-        .isString().withMessage('Selected color must be a string'),
-
-    body('responses.*.selectedMaterial')
-        .optional({ nullable: true })
-        .isString().withMessage('Selected material must be a string')
+        .isString().withMessage('Selected color must be a string')
 ];

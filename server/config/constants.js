@@ -61,12 +61,14 @@ export const STYLE_PALETTES = {
 
 // Quiz Question Categories
 export const QUIZ_CATEGORIES = {
-    FULL_ROOM: 'full_room',
-    FURNITURE: 'furniture',
-    LIGHTING: 'lighting',
+    BEDROOM: 'bedroom',
+    OBJECT: 'object',
     TEXTURE: 'texture',
     COLOR: 'color',
-    BEDROOM: 'bedroom'
+    OVERALL_ROOM: 'overall_room',
+    DIY: 'diy',
+    LAMP_FIXTURE: 'lamp_fixture',
+    RUG: 'rug'
 };
 
 // Mode Labels for Multi-User
@@ -90,13 +92,11 @@ export const DEFAULT_WEIGHTS = {
 export const MATCH_WEIGHTS = {
     PRIMARY_STYLE: 5,
     SECONDARY_STYLE: 3,
-    COLOR_MATCH: 3,
-    MATERIAL_MATCH: 2
+    COLOR_MATCH: 3
 };
 
 // Quiz Scoring Weights
 export const QUIZ_WEIGHTS = {
     STYLE: 2,
-    COLOR: 1,
-    MATERIAL: 1
+    COLOR: 1
 };

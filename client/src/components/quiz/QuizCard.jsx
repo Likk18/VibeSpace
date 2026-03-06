@@ -1,17 +1,30 @@
 import { useState } from 'react';
 
+/**
+ * Map style tags to display-friendly vibe names
+ */
+const VIBE_LABELS = {
+    'bohemian': 'Bohemian',
+    'industrial': 'Industrial',
+    'maximalist': 'Maximalist',
+    'minimalist': 'Minimalist',
+    'modern-luxury': 'Modern Luxury',
+    'scandinavian': 'Scandinavian',
+    'traditional': 'Traditional'
+};
+
 const QuizCard = ({ question, onSelect, selectedOption }) => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
             {/* Question Text */}
             <h2 className="text-2xl md:text-3xl font-display text-center mb-8 text-balance">
                 {question.question_text}
             </h2>
 
-            {/* Image Grid - 2x2 */}
-            <div className="grid grid-cols-2 gap-4 md:gap-6 mb-6">
+            {/* Image Grid - 2x3 responsive grid for 6 options */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
                 {question.image_options.map((option, index) => (
                     <button
                         key={index}
@@ -23,17 +36,29 @@ const QuizCard = ({ question, onSelect, selectedOption }) => {
               transition-all duration-300 transform
               ${selectedOption === index
                                 ? 'ring-4 ring-primary scale-[0.98]'
-                                : 'ring-2 ring-gray-200 hover:ring-primary/50 hover:scale-[1.02]'
+                                : 'ring-2 ring-gray-200/20 hover:ring-primary/50 hover:scale-[1.02]'
                             }
-              ${hoveredIndex === index ? 'shadow-2xl' : 'shadow-md'}
+              ${hoveredIndex === index ? 'shadow-2xl shadow-primary/20' : 'shadow-md'}
             `}
                     >
                         <img
                             src={option.image_url}
-                            alt={`Option ${index + 1}`}
+                            alt={`${VIBE_LABELS[option.style_tag] || option.style_tag} option`}
                             className="w-full h-full object-cover"
                             loading="lazy"
                         />
+
+                        {/* Hover Vibe Label */}
+                        <div className={`
+              absolute bottom-0 left-0 right-0 p-2
+              bg-gradient-to-t from-black/80 to-transparent
+              transition-opacity duration-200
+              ${hoveredIndex === index || selectedOption === index ? 'opacity-100' : 'opacity-0'}
+            `}>
+                            <span className="text-xs font-medium text-white/90">
+                                {VIBE_LABELS[option.style_tag] || option.style_tag}
+                            </span>
+                        </div>
 
                         {/* Selected Overlay */}
                         {selectedOption === index && (

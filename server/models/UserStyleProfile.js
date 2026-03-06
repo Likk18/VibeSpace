@@ -52,7 +52,7 @@ const userStyleProfileSchema = new mongoose.Schema({
     },
     dominant_material: {
         type: String,
-        required: true
+        default: 'wood'
     },
     color_palette: [{
         type: String // Hex color codes

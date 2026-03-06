@@ -1,17 +1,38 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useState, useEffect, useMemo } from 'react';
+import InfiniteMenu from '../components/InfiniteMenu/InfiniteMenu';
 
 const Landing = () => {
     const { isAuthenticated } = useAuth();
+    const [menuItems, setMenuItems] = useState([]);
 
-    const styles = [
-        { name: 'Minimalist', emoji: '🤍', desc: 'Clean. Intentional. Calm.' },
-        { name: 'Bohemian', emoji: '🌿', desc: 'Layered. Global. Free-spirited.' },
-        { name: 'Scandinavian', emoji: '🕯️', desc: 'Functional. Warm. Natural.' },
-        { name: 'Industrial', emoji: '🏭', desc: 'Raw. Urban. Utilitarian.' },
-        { name: 'Modern Luxury', emoji: '✨', desc: 'Sleek. Glamorous. Rich.' },
-        { name: 'Traditional', emoji: '🏛️', desc: 'Classic. Timeless. Elegant.' }
-    ];
+    useEffect(() => {
+        // Load placeholder images for the different design styles
+        const stylesData = [
+            { name: 'Minimalist' },
+            { name: 'Bohemian' },
+            { name: 'Scandinavian' },
+            { name: 'Industrial' },
+            { name: 'Modern Luxury' },
+            { name: 'Traditional' },
+            { name: 'Eclectic' },
+            { name: 'Mid-Century' },
+            { name: 'Coastal' },
+            { name: 'Farmhouse' },
+            { name: 'Rustic' },
+            { name: 'Art Deco' }
+        ];
+
+        const styledItems = stylesData.map((style) => ({
+            image: `https://picsum.photos/seed/${style.name.replace(' ', '')}/800/800`,
+            link: '/dashboard',
+            title: style.name,
+            description: 'Discover the perfect furniture to match this aesthetic.'
+        }));
+
+        setMenuItems(styledItems);
+    }, []);
 
     return (
         <div className="min-h-screen">
@@ -76,35 +97,25 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* Style Gallery */}
-            <section className="py-20 bg-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-4xl font-display font-bold text-center mb-4">
+            {/* Style Gallery using InfiniteMenu */}
+            <section className="py-20 bg-background overflow-hidden relative">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 relative z-10">
+                    <h2 className="text-4xl font-display font-bold text-center text-white mb-2">
                         Explore Design Styles
                     </h2>
-                    <p className="text-center text-gray-400 mb-12">
+                    <p className="text-center text-gray-400">
                         Discover your aesthetic identity
                     </p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        {styles.map((style) => (
-                            <Link
-                                key={style.name}
-                                to="/dashboard"
-                                className="group relative aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 group-hover:from-primary/30 group-hover:to-accent/30 transition-all" />
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                                    <div className="text-5xl mb-3">{style.emoji}</div>
-                                    <h3 className="text-2xl font-display font-bold text-light mb-2">
-                                        {style.name}
-                                    </h3>
-                                    <p className="text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {style.desc}
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                </div>
+
+                <div className="w-full max-w-[1400px] mx-auto px-4">
+                    {menuItems.length > 0 ? (
+                        <InfiniteMenu items={menuItems} scale={1.2} />
+                    ) : (
+                        <div className="h-[600px] w-full bg-surface rounded-2xl flex items-center justify-center border border-white/5">
+                            <div className="spinner border-primary border-t-transparent border-4 w-12 h-12 rounded-full animate-spin"></div>
+                        </div>
+                    )}
                 </div>
             </section>
 

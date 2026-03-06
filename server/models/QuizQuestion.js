@@ -14,7 +14,7 @@ const quizQuestionSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['full_room', 'furniture', 'lighting', 'texture', 'color', 'bedroom'],
+        enum: ['bedroom', 'object', 'texture', 'color', 'overall_room', 'diy', 'lamp_fixture', 'rug'],
         required: true
     },
     image_options: [{
@@ -25,24 +25,16 @@ const quizQuestionSchema = new mongoose.Schema({
         style_tag: {
             type: String,
             required: true
-        },
-        color_tag: {
-            type: String,
-            required: true
-        },
-        material_tag: {
-            type: String,
-            required: true
         }
     }]
 }, {
     timestamps: true
 });
 
-// Validate exactly 4 image options per question
+// Validate 4-7 image options per question
 quizQuestionSchema.pre('save', function (next) {
-    if (this.image_options.length !== 4) {
-        next(new Error('Each question must have exactly 4 image options'));
+    if (this.image_options.length < 4 || this.image_options.length > 7) {
+        next(new Error('Each question must have 4-7 image options'));
     }
     next();
 });

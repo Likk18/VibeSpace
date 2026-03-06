@@ -108,7 +108,7 @@ const Checkout = () => {
                         ) : (
                             <div className="section-expanded">
                                 <h3 className="section-title mb-4">
-                                    <span className="section-number">1</span> 选择配送地址 (Select Address)
+                                    <span className="section-number">1</span> Select Address
                                 </h3>
 
                                 {addresses.length > 0 ? (

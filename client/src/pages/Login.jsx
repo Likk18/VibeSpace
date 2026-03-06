@@ -95,7 +95,17 @@ const Login = () => {
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
+                    <div className="mt-4 text-center">
+                        <button
+                            type="button"
+                            onClick={() => alert('A password reset link has been sent to your email address.')}
+                            className="text-sm text-primary/80 hover:text-primary hover:underline transition-colors"
+                        >
+                            Forgot your password?
+                        </button>
+                    </div>
+
+                    <div className="mt-4 text-center">
                         <p className="text-sm text-gray-400">
                             Don't have an account?{' '}
                             <Link to="/register" className="text-primary font-medium hover:underline">

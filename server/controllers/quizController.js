@@ -51,9 +51,7 @@ export const submitQuiz = async (req, res, next) => {
             group_id: req.user.group_id || null,
             responses: responses.map(r => ({
                 question_id: r.questionId,
-                selected_style: r.selectedStyle || null,
-                selected_color: r.selectedColor || null,
-                selected_material: r.selectedMaterial || null
+                selected_style: r.selectedStyle || null
             }))
         });
 
@@ -86,7 +84,6 @@ export const submitQuiz = async (req, res, next) => {
                     primary_style: styleProfile.primary_style,
                     secondary_style: styleProfile.secondary_style,
                     dominant_color: styleProfile.dominant_color,
-                    dominant_material: styleProfile.dominant_material,
                     color_palette: styleProfile.color_palette
                 }
             }
@@ -110,6 +107,31 @@ export const getQuizStatus = async (req, res, next) => {
             data: {
                 quiz_complete: user.quiz_complete
             }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/quiz/retake
+ * @desc    Reset quiz so user can retake it
+ * @access  Private
+ */
+export const retakeQuiz = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        // Delete existing responses and profile
+        await UserResponse.deleteMany({ user_id: userId });
+        await UserStyleProfile.deleteMany({ user_id: userId });
+
+        // Reset quiz_complete flag
+        await User.findByIdAndUpdate(userId, { quiz_complete: false });
+
+        res.json({
+            success: true,
+            message: 'Quiz reset successfully. You can now retake the quiz.'
         });
     } catch (error) {
         next(error);

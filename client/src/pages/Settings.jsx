@@ -1,11 +1,29 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
+import { quizAPI } from '../services/api';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const { togglePersonalization, personalizationOn } = useProfile();
+    const [retaking, setRetaking] = useState(false);
+
+    const handleRetakeQuiz = async () => {
+        if (!confirm('Are you sure you want to retake the quiz? Your current style profile will be reset.')) return;
+        setRetaking(true);
+        try {
+            await quizAPI.retake();
+            updateUser({ quiz_complete: false });
+            navigate('/quiz');
+        } catch (error) {
+            console.error('Failed to reset quiz:', error);
+            alert('Failed to reset quiz. Please try again.');
+        } finally {
+            setRetaking(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background py-12 text-white">
@@ -59,6 +77,17 @@ const Settings = () => {
                         </div>
                         <h2 className="text-xl font-bold mb-1">FAQs & Support</h2>
                         <p className="text-gray-400 text-sm">Browse help topics and contact support</p>
+                    </button>
+                    {/* Retake Quiz Card */}
+                    <button onClick={handleRetakeQuiz} disabled={retaking} className="bg-surface/30 p-8 rounded-2xl border border-white/5 backdrop-blur-sm text-left hover:border-primary/50 transition-all group w-full">
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="p-3 bg-pink-500/10 rounded-xl text-pink-400 group-hover:scale-110 transition-transform">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            </div>
+                            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                        </div>
+                        <h2 className="text-xl font-bold mb-1">{retaking ? 'Resetting...' : 'Retake Style Quiz'}</h2>
+                        <p className="text-gray-400 text-sm">Reset your aesthetic profile and discover a new vibe</p>
                     </button>
                 </div>
 

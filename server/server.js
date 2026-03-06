@@ -2,9 +2,14 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -17,7 +22,6 @@ import productRoutes from './routes/products.js';
 // Load environment variables
 dotenv.config();
 
-import Product from './models/Product.js';
 import QuizQuestion from './models/QuizQuestion.js';
 import seedDatabase from './scripts/seedDataset.js';
 
@@ -25,10 +29,9 @@ import seedDatabase from './scripts/seedDataset.js';
 await connectDB();
 
 try {
-    const productCount = await Product.countDocuments();
     const quizCount = await QuizQuestion.countDocuments();
-    if (productCount === 0 || quizCount === 0) {
-        console.log('Database empty or incomplete, automatically running seed script...');
+    if (quizCount === 0) {
+        console.log('No quiz questions found, automatically running seed script...');
         await seedDatabase();
     }
 } catch (error) {
@@ -65,6 +68,9 @@ app.use('/api/', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve local asset images at /assets
+app.use('/assets', express.static(path.join(__dirname, '..', 'client', 'assets')));
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
@@ -86,9 +92,8 @@ app.get('/api/health', (req, res) => {
 app.get('/api/seed', async (req, res) => {
     try {
         await seedDatabase();
-        const pCount = await Product.countDocuments();
         const qCount = await QuizQuestion.countDocuments();
-        res.json({ success: true, message: 'Seeding completed', products: pCount, questions: qCount });
+        res.json({ success: true, message: 'Seeding completed', questions: qCount });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message, stack: e.stack });
     }

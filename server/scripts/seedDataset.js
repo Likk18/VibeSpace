@@ -1,169 +1,232 @@
 import fs from 'fs';
 import path from 'path';
-import csv from 'csv-parser';
-import Product from '../models/Product.js';
+import { fileURLToPath } from 'url';
 import QuizQuestion from '../models/QuizQuestion.js';
 
-const CSV_FILE_PATH = path.join(process.cwd(), '..', 'scripts', 'amazon_furniture_tagged.csv');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const QUIZ_CATEGORIES = ['full_room', 'furniture', 'lighting', 'texture', 'color', 'bedroom'];
+/**
+ * The 7 vibe folders in client/assets
+ */
+const VIBES = [
+    { folder: 'Bohemian', tag: 'bohemian' },
+    { folder: 'Industrial', tag: 'industrial' },
+    { folder: 'Maximalist', tag: 'maximalist' },
+    { folder: 'Minimalist', tag: 'minimalist' },
+    { folder: 'ModernLuxury', tag: 'modern-luxury' },
+    { folder: 'Scandinavian', tag: 'scandinavian' },
+    { folder: 'Traditional', tag: 'traditional' }
+];
 
+/**
+ * Category config: folder name in assets
+ */
+const CATEGORIES = {
+    bedroom: 'Bedroom 20',
+    object: 'Object 20',
+    texture: 'Texture 15',
+    color: 'Color 8',
+    overall_room: 'Overall Room 6',
+    diy: 'DIY 8',
+    lamp_fixture: 'Lamp Fixtures 6',
+    rug: 'Rug 6'
+};
+
+const ASSETS_DIR = path.join(__dirname, '..', '..', 'client', 'assets');
+
+/**
+ * Scan actual image files in a folder and return URL paths
+ */
+function getImageFiles(vibeFolder, categoryFolder) {
+    const dirPath = path.join(ASSETS_DIR, vibeFolder, categoryFolder);
+    if (!fs.existsSync(dirPath)) return [];
+
+    return fs.readdirSync(dirPath)
+        .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
+        .map(f => `/assets/${vibeFolder}/${encodeURIComponent(categoryFolder)}/${encodeURIComponent(f)}`);
+}
+
+/**
+ * BuzzFeed-style question texts per category
+ */
+const QUESTION_POOL = {
+    bedroom: [
+        "Which bedroom makes you wanna hit snooze forever? 🛏️",
+        "Pick the bedroom that screams 'main character energy' ✨",
+        "Which bedroom would you show off on a home tour? 🏠",
+        "Choose the bedroom that makes your heart skip a beat 💖"
+    ],
+    object: [
+        "Pick the decor piece you'd totally steal from a fancy hotel 🏨",
+        "Which object would look perfect on your shelf? ✨",
+        "Choose the decor item that speaks to your soul 🎨",
+        "Which small detail would tie your room together? 🏺"
+    ],
+    texture: [
+        "Which texture would you want on your dream couch? 🛋️",
+        "Pick the fabric that makes you go 'ooh, touchy' 🤲",
+        "Which texture pattern catches your eye first? 👁️",
+        "What material makes you feel most at home? 🪵"
+    ],
+    color: [
+        "Which color palette screams *you*? 🎨",
+        "Pick the tones that match your morning mood 🌅",
+        "Which shades do you naturally gravitate towards? 🌈"
+    ],
+    overall_room: [
+        "Choose a room that just *gets* you 🏡",
+        "Which space would you spend a lazy Sunday in? ☕",
+        "Pick the room you'd brag about to your friends 📸"
+    ],
+    diy: [
+        "Which DIY project are you saving on Pinterest? 📌",
+        "Pick the craft project that's calling your name 🔨",
+        "Which DIY would you actually attempt this weekend? 🎨",
+    ],
+    lamp_fixture: [
+        "Pick the light that sets *the* mood 💡",
+        "Which lamp would you put in your cozy corner? 🕯️"
+    ],
+    rug: [
+        "Which rug would you put under your coffee table? 🏠",
+        "Pick the pattern you wouldn't mind walking on every day 👣"
+    ]
+};
+
+/**
+ * Shuffle an array in-place (Fisher-Yates)
+ */
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+/**
+ * Pick a random element from an array
+ */
+function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Build 6 image options for a question by scanning actual files
+ * Picks one random image per vibe from the given category folder
+ * Only uses vibes that actually have images in this category
+ */
+function buildImageOptions(categoryFolder) {
+    // Find which vibes actually have images for this category
+    const available = [];
+    for (const vibe of VIBES) {
+        const images = getImageFiles(vibe.folder, categoryFolder);
+        if (images.length > 0) {
+            available.push({ vibe, images });
+        }
+    }
+
+    if (available.length < 6) {
+        console.warn(`  ⚠️ Only ${available.length} vibes have images for ${categoryFolder}, using all available`);
+    }
+
+    // Shuffle and pick up to 6 vibes
+    shuffle(available);
+    const selected = available.slice(0, 6);
+
+    return selected.map(({ vibe, images }) => ({
+        image_url: pickRandom(images),
+        style_tag: vibe.tag
+    }));
+}
+
+/**
+ * Check which categories have enough vibes with images
+ */
+function getAvailableCategories() {
+    const available = {};
+    for (const [category, folder] of Object.entries(CATEGORIES)) {
+        let vibeCount = 0;
+        for (const vibe of VIBES) {
+            const images = getImageFiles(vibe.folder, folder);
+            if (images.length > 0) vibeCount++;
+        }
+        if (vibeCount >= 4) { // Need at least 4 vibes to make a meaningful question
+            available[category] = folder;
+        } else {
+            console.warn(`⚠️ Skipping category "${category}" (${folder}): only ${vibeCount} vibes have images`);
+        }
+    }
+    return available;
+}
+
+/**
+ * Generate quiz questions from available assets
+ */
+function generateQuestions() {
+    const availableCategories = getAvailableCategories();
+    const questions = [];
+
+    for (const [category, texts] of Object.entries(QUESTION_POOL)) {
+        if (!availableCategories[category]) {
+            console.warn(`⚠️ Skipping ${texts.length} "${category}" questions (no assets)`);
+            continue;
+        }
+
+        const folder = availableCategories[category];
+
+        for (const text of texts) {
+            const options = buildImageOptions(folder);
+            if (options.length >= 4) {
+                questions.push({
+                    question_text: text,
+                    category,
+                    image_options: options
+                });
+            }
+        }
+    }
+
+    // Shuffle all questions randomly
+    shuffle(questions);
+
+    // Assign question numbers after shuffling
+    questions.forEach((q, i) => {
+        q.question_number = i + 1;
+    });
+
+    return questions;
+}
+
+/**
+ * Seed the database with quiz questions using local asset images
+ */
 const seedDatabase = async () => {
     try {
-        console.log('Clearing existing products and quiz questions...');
-        await Product.deleteMany();
+        console.log('Clearing existing quiz questions...');
         await QuizQuestion.deleteMany();
         console.log('Clearing complete.');
 
-        console.log(`Parsing CSV from ${CSV_FILE_PATH}...`);
+        console.log('Scanning asset folders...');
+        console.log(`Assets directory: ${ASSETS_DIR}`);
+        const questions = generateQuestions();
 
-        const products = [];
-        const uniqueStyles = new Set();
-        const uniqueColors = new Set();
-        const uniqueMaterials = new Set();
-        const seenAsins = new Set();
+        console.log(`Generated ${questions.length} quiz questions from local assets.`);
+        if (questions.length === 0) {
+            console.error('No questions generated! Check that asset folders exist.');
+            return;
+        }
 
-        return new Promise((resolve, reject) => {
-            fs.createReadStream(CSV_FILE_PATH)
-                .pipe(csv())
-                .on('data', (row) => {
-                    try {
-                        // Extract style tags array correctly from string representation like "['industrial', 'minimalist']" or "['industrial']"
-                        let parsedStyleTags = [];
-                        if (row.style_tags) {
-                            try {
-                                // simple regex to extract words inside single quotes
-                                const matches = row.style_tags.match(/'([^']+)'/g);
-                                if (matches) {
-                                    parsedStyleTags = matches.map(m => {
-                                        let tag = m.replace(/'/g, '');
-                                        if (tag === 'modern_luxury') return 'modern-luxury';
-                                        return tag;
-                                    });
-                                }
-                            } catch (e) {
-                                console.warn('Could not parse style tags:', row.style_tags);
-                            }
-                        }
-
-                        // fallback if parsing fails or no style tags
-                        if (parsedStyleTags.length === 0) {
-                            parsedStyleTags = ['modern-luxury']; // default fallback
-                        }
-
-                        // Collect unique properties to build diverse quiz questions later
-                        parsedStyleTags.forEach(t => uniqueStyles.add(t));
-                        if (row.color_tag) uniqueColors.add(row.color_tag);
-                        if (row.material_tag) uniqueMaterials.add(row.material_tag);
-
-                        // Parse price
-                        let rawPrice = row.price;
-                        let numPrice = 0;
-                        if (rawPrice && rawPrice.startsWith('$')) {
-                            numPrice = parseFloat(rawPrice.replace('$', '').replace(',', ''));
-                        }
-
-                        if (row.asin && seenAsins.has(row.asin)) {
-                            return; // Skip duplicate ASINs
-                        }
-                        if (row.asin) {
-                            seenAsins.add(row.asin);
-                        }
-
-                        const product = new Product({
-                            asin: row.asin || null,
-                            name: row.title || 'Unknown Product',
-                            price: isNaN(numPrice) ? 0 : numPrice,
-                            category: row.categories || 'Uncategorized',
-                            style_tags: parsedStyleTags,
-                            color_tag: row.color_tag || 'neutral',
-                            material_tag: row.material_tag || 'wood',
-                            image_url: row.primary_image || 'https://via.placeholder.com/300',
-                            description: row.description || '',
-                            rating: parseFloat(row.rating) || 0,
-                            in_stock: true,
-                            source: 'amazon_dataset'
-                        });
-
-                        products.push(product);
-                    } catch (err) {
-                        console.error('Error parsing row:', row.asin, err.message);
-                    }
-                })
-                .on('end', async () => {
-                    console.log(`Successfully parsed ${products.length} products.`);
-
-                    try {
-                        // 1. Insert Products
-                        console.log('Inserting products to MongoDB...');
-                        await Product.insertMany(products);
-                        console.log('Products inserted.');
-
-                        // 2. Generate and Insert Quiz Questions
-                        console.log('Generating BuzzFeed-style quiz questions...');
-                        const questionsToInsert = [];
-
-                        for (let i = 0; i < QUIZ_CATEGORIES.length; i++) {
-                            const category = QUIZ_CATEGORIES[i];
-
-                            // Randomly select 4 distinct products to use as image options for this question
-                            // to make it "BuzzFeed-style", users pick the image they vibe with most
-                            const shuffledProducts = [...products].sort(() => 0.5 - Math.random());
-                            const selectedProducts = shuffledProducts.slice(0, 4);
-
-                            const imageOptions = selectedProducts.map(prod => ({
-                                image_url: prod.image_url,
-                                style_tag: prod.style_tags[0] || 'minimalist',
-                                color_tag: prod.color_tag,
-                                material_tag: prod.material_tag
-                            }));
-
-                            // Create the question text based on category
-                            let questionText = "Which of these speaks to you most?";
-                            if (category === 'full_room') questionText = "Pick a room setting that matches your perfect vibe:";
-                            if (category === 'furniture') questionText = "Choose a piece of furniture you'd love to own:";
-                            if (category === 'lighting') questionText = "Which lighting style catches your eye?";
-                            if (category === 'texture') questionText = "Select the texture or pattern you're most drawn to:";
-                            if (category === 'color') questionText = "Which color palette makes you feel at home?";
-                            if (category === 'bedroom') questionText = "Finally, pick a bedroom setup for your ideal morning:";
-
-                            questionsToInsert.push({
-                                question_number: i + 1,
-                                question_text: questionText,
-                                category: category,
-                                image_options: imageOptions
-                            });
-                        }
-
-                        console.log('Inserting quiz questions to MongoDB...');
-                        await QuizQuestion.insertMany(questionsToInsert);
-                        console.log('Quiz questions inserted safely.');
-
-                        console.log('Seeding complete!');
-                        resolve();
-
-                    } catch (err) {
-                        console.error('Error during database insertion:');
-                        if (err.name === 'ValidationError') {
-                            for (let field in err.errors) {
-                                console.error(`- ${field}: ${err.errors[field].message}`);
-                            }
-                        } else if (err.writeErrors) {
-                            err.writeErrors.forEach(we => {
-                                console.error(we.err.errmsg);
-                            });
-                        } else {
-                            console.error(err.message);
-                        }
-                        reject(err);
-                    }
-                })
-                .on('error', (error) => {
-                    console.error('Error reading CSV stream:', error);
-                    reject(error);
-                });
-        });
-
+        console.log('Inserting quiz questions...');
+        // Use insertMany without running individual save validators
+        await QuizQuestion.collection.insertMany(questions.map(q => ({
+            ...q,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        })));
+        console.log('Quiz questions inserted successfully!');
+        console.log('Seeding complete! 🎉');
     } catch (error) {
         console.error('Seeding script failed:', error);
         throw error;
