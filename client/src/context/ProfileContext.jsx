@@ -17,6 +17,7 @@ export const ProfileProvider = ({ children }) => {
     const [profile, setProfile] = useState(null);
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState([]);
+    const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -32,6 +33,7 @@ export const ProfileProvider = ({ children }) => {
             setProfile(response.data.data.profile);
             setCart(response.data.data.cart || []);
             setWishlist(response.data.data.wishlist || []);
+            setAddresses(response.data.data.addresses || []);
         } catch (error) {
             console.error('Failed to fetch profile:', error);
         } finally {
@@ -106,6 +108,28 @@ export const ProfileProvider = ({ children }) => {
         }
     };
 
+    const addAddress = async (addressData) => {
+        try {
+            const response = await profileAPI.addAddress(addressData);
+            setAddresses(response.data.data.addresses);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to add address:', error);
+            throw error;
+        }
+    };
+
+    const deleteAddress = async (addressId) => {
+        try {
+            const response = await profileAPI.deleteAddress(addressId);
+            setAddresses(response.data.data.addresses);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to delete address:', error);
+            throw error;
+        }
+    };
+
     const value = {
         profile,
         cart,
@@ -118,7 +142,10 @@ export const ProfileProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         addToWishlist,
-        removeFromWishlist
+        removeFromWishlist,
+        addresses,
+        addAddress,
+        deleteAddress
     };
 
     return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import { useState, useRef, useEffect } from 'react';
@@ -8,6 +8,10 @@ const Navbar = () => {
     const { profile, personalizationOn, togglePersonalization, cart, wishlist } = useProfile();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
+    const location = useLocation();
+
+    // Check if user is browsing products
+    const isBrowsingProducts = location.pathname === '/dashboard' || location.pathname.startsWith('/product');
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -33,14 +37,14 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center space-x-2">
+                    <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center space-x-2">
                         <span className="text-2xl font-display font-bold text-primary">
                             VibeSpace
                         </span>
                     </Link>
 
                     {/* Center - Style Label (if on dashboard) */}
-                    {isAuthenticated && profile && window.location.pathname === '/dashboard' && (
+                    {isAuthenticated && profile && isBrowsingProducts && (
                         <div className="hidden md:flex items-center space-x-4">
                             <div className="style-chip text-base">
                                 {profile.style_label}
@@ -53,7 +57,7 @@ const Navbar = () => {
                         {isAuthenticated ? (
                             <>
                                 {/* Personalization Toggle (only on dashboard) */}
-                                {window.location.pathname === '/dashboard' && (
+                                {isBrowsingProducts && (
                                     <button
                                         onClick={handleToggle}
                                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${personalizationOn

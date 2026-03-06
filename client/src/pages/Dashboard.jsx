@@ -45,7 +45,15 @@ const Dashboard = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await productsAPI.search(filters);
+            // Map frontend filter state to backend query params
+            const searchParams = {
+                q: filters.search,
+                category: filters.category,
+                minPrice: filters.minPrice,
+                maxPrice: filters.maxPrice
+            };
+            
+            const response = await productsAPI.search(searchParams);
             setProducts(response.data.data.products);
         } catch (error) {
             console.error('Search failed:', error);

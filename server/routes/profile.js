@@ -1,5 +1,5 @@
 import express from 'express';
-import { mergeProfiles, getMyProfile, togglePersonalization, addToCart, removeFromCart, addToWishlist, removeFromWishlist } from '../controllers/profileController.js';
+import { mergeProfiles, getMyProfile, togglePersonalization, addToCart, removeFromCart, addToWishlist, removeFromWishlist, addAddress, deleteAddress } from '../controllers/profileController.js';
 import { protect, requireQuizComplete } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -18,5 +18,8 @@ router.delete('/cart/:productId', requireQuizComplete, removeFromCart);
 // Wishlist Routes
 router.post('/wishlist', requireQuizComplete, addToWishlist);
 router.delete('/wishlist/:productId', requireQuizComplete, removeFromWishlist);
+// Address Routes
+router.post('/address', requireQuizComplete, addAddress);
+router.delete('/address/:addressId', requireQuizComplete, deleteAddress);
 
 export default router;

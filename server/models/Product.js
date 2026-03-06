@@ -60,6 +60,10 @@ const productSchema = new mongoose.Schema({
     source: {
         type: String,
         default: 'kaggle_amazon'
+    },
+    designer: {
+        type: String,
+        default: 'Unknown Designer'
     }
 }, {
     timestamps: true

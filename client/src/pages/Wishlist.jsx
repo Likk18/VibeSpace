@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext';
 import ProductCard from '../components/products/ProductCard';
 
 const Wishlist = () => {
+    const navigate = useNavigate();
     const { wishlist, removeFromWishlist } = useProfile();
 
     // Group items by folder
@@ -45,9 +46,17 @@ const Wishlist = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
                     <h1 className="text-4xl font-display font-bold text-light">Your Wishlist ({wishlist.length})</h1>
-                    <Link to="/dashboard" className="btn-secondary transition-colors">
-                        ← Continue Shopping
-                    </Link>
+                    <div className="flex space-x-4">
+                        <button 
+                            className="bg-primary hover:bg-primary/80 text-white px-6 py-2 rounded-full font-bold transition-colors"
+                            onClick={() => navigate('/checkout', { state: { items: wishlist } })}
+                        >
+                            Checkout Entire Wishlist
+                        </button>
+                        <Link to="/dashboard" className="btn-secondary transition-colors">
+                            ← Continue Shopping
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="space-y-12">

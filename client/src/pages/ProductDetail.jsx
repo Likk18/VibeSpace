@@ -9,7 +9,7 @@ import ProductCard from '../components/products/ProductCard';
 const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { profile, addToCart, cart, addToWishlist, wishlist } = useProfile();
+    const { profile, addToCart, removeFromCart, cart, addToWishlist, wishlist } = useProfile();
     const [product, setProduct] = useState(null);
     const [similarProducts, setSimilarProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -111,6 +111,13 @@ const ProductDetail = () => {
                             </div>
                         )}
 
+                        {/* Designer Info */}
+                        {product.designer && (
+                            <div className="mb-6 flex items-center space-x-3 text-gray-400">
+                                <span>Designed by <strong className="text-white">{product.designer}</strong></span>
+                            </div>
+                        )}
+
                         {/* Style Tags */}
                         <div className="mb-6">
                             <h3 className="text-sm font-semibold text-gray-300 mb-2">Style:</h3>
@@ -151,15 +158,46 @@ const ProductDetail = () => {
 
                         {/* Actions */}
                         <div className="flex gap-4 mb-6">
-                            <button
-                                disabled={!product.in_stock}
-                                onClick={async () => {
-                                    await addToCart(product._id);
-                                }}
-                                className={`btn-primary flex-1 py-4 text-lg ${!product.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                {cart.some(id => id === product._id || id?._id === product._id) ? 'Add Another to Cart' : 'Add to Cart'}
-                            </button>
+                            {(() => {
+                                const quantityInCart = cart.filter(cid => cid === product._id || cid?._id === product._id).length;
+                                
+                                if (quantityInCart > 0) {
+                                    return (
+                                        <div className="flex-1 border border-primary rounded-lg flex items-center justify-between px-6 py-4 bg-primary/5">
+                                            <button 
+                                                onClick={async () => await removeFromCart(product._id)} 
+                                                className="text-white hover:text-primary transition-colors focus:outline-none p-2"
+                                            >
+                                                {quantityInCart === 1 ? (
+                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                ) : (
+                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" /></svg>
+                                                )}
+                                            </button>
+                                            <span className="text-xl font-bold text-white">{quantityInCart}</span>
+                                            <button 
+                                                disabled={!product.in_stock}
+                                                onClick={async () => await addToCart(product._id)} 
+                                                className={`text-white hover:text-primary transition-colors focus:outline-none p-2 ${!product.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            >
+                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                                            </button>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <button
+                                        disabled={!product.in_stock}
+                                        onClick={async () => {
+                                            await addToCart(product._id);
+                                        }}
+                                        className={`btn-primary flex-1 py-4 text-lg ${!product.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        Add to Cart
+                                    </button>
+                                );
+                            })()}
 
                             <button
                                 disabled={!product.in_stock}

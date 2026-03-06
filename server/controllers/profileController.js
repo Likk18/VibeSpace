@@ -124,7 +124,8 @@ export const getMyProfile = async (req, res, next) => {
             data: {
                 profile,
                 cart: user.cart,
-                wishlist: user.wishlist
+                wishlist: user.wishlist,
+                addresses: user.addresses
             }
         });
     } catch (error) {
@@ -170,11 +171,9 @@ export const addToCart = async (req, res, next) => {
 
         const user = await User.findById(req.user.id);
 
-        // Check if already in cart
-        if (!user.cart.includes(productId)) {
-            user.cart.push(productId);
-            await user.save();
-        }
+        // Push to cart array, allowing duplicates to act as quantity
+        user.cart.push(productId);
+        await user.save();
 
         // Populate cart for response
         await user.populate('cart');
@@ -200,8 +199,11 @@ export const removeFromCart = async (req, res, next) => {
 
         const user = await User.findById(req.user.id);
 
-        user.cart = user.cart.filter(id => id.toString() !== productId);
-        await user.save();
+        const index = user.cart.findIndex(id => id.toString() === productId);
+        if (index !== -1) {
+            user.cart.splice(index, 1);
+            await user.save();
+        }
 
         await user.populate('cart');
 
@@ -272,6 +274,53 @@ export const removeFromWishlist = async (req, res, next) => {
             success: true,
             message: 'Item removed from wishlist',
             data: { wishlist: user.wishlist }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/profile/address
+ * @desc    Add a new address
+ * @access  Private
+ */
+export const addAddress = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const newAddress = req.body;
+        
+        if (newAddress.is_default) {
+            user.addresses.forEach(addr => addr.is_default = false);
+        }
+        
+        user.addresses.push(newAddress);
+        await user.save();
+        
+        res.json({
+            success: true,
+            message: 'Address added successfully',
+            data: { addresses: user.addresses }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   DELETE /api/profile/address/:addressId
+ * @desc    Delete an address
+ * @access  Private
+ */
+export const deleteAddress = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+        user.addresses = user.addresses.filter(addr => addr._id.toString() !== req.params.addressId);
+        await user.save();
+        res.json({
+            success: true,
+            message: 'Address removed',
+            data: { addresses: user.addresses }
         });
     } catch (error) {
         next(error);

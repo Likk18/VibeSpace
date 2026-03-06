@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5006/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const api = axios.create({
@@ -66,6 +66,8 @@ export const profileAPI = {
     removeFromCart: (productId) => api.delete(`/profile/cart/${productId}`),
     addToWishlist: (productId, folder) => api.post('/profile/wishlist', { productId, folder }),
     removeFromWishlist: (productId) => api.delete(`/profile/wishlist/${productId}`),
+    addAddress: (data) => api.post('/profile/address', data),
+    deleteAddress: (id) => api.delete(`/profile/address/${id}`)
 };
 
 // Moodboard API
@@ -80,6 +82,12 @@ export const productsAPI = {
     getProduct: (id) => api.get(`/products/${id}`),
     search: (params) => api.get('/products/search', { params }),
     getCategories: () => api.get('/products/categories')
+};
+
+// Orders API
+export const ordersAPI = {
+    createOrder: (orderData) => api.post('/orders', orderData),
+    getUserOrders: () => api.get('/orders')
 };
 
 export default api;

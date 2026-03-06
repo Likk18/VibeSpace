@@ -1,13 +1,27 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext';
 
 const Cart = () => {
-    const { cart, removeFromCart } = useProfile();
+    const navigate = useNavigate();
+    const { cart, removeFromCart, addToCart } = useProfile();
 
     const calculateTotal = () => {
         if (!cart) return 0;
         return cart.reduce((total, product) => total + (product?.price || 0), 0).toFixed(2);
     };
+
+    // Group items for display
+    const groupedCartMap = (cart || []).reduce((acc, product) => {
+        if (!product) return acc;
+        const id = product._id;
+        if (!acc[id]) {
+            acc[id] = { ...product, cartQuantity: 1 };
+        } else {
+            acc[id].cartQuantity += 1;
+        }
+        return acc;
+    }, {});
+    const uniqueCartItems = Object.values(groupedCartMap);
 
     if (!cart || cart.length === 0) {
         return (
@@ -39,7 +53,7 @@ const Cart = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Cart Items */}
                     <div className="lg:col-span-2 space-y-4">
-                        {cart.map((product, index) => (
+                        {uniqueCartItems.map((product, index) => (
                             <div key={`${product._id}-${index}`} className="bg-surface rounded-xl p-4 flex gap-6 items-center border border-white/5 relative group">
                                 <Link to={`/product/${product._id}`} className="w-24 h-24 flex-shrink-0 bg-background rounded-lg overflow-hidden block">
                                     <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
@@ -48,17 +62,34 @@ const Cart = () => {
                                     <Link to={`/product/${product._id}`} className="text-lg font-bold text-light hover:text-primary transition-colors line-clamp-1 block mb-1">
                                         {product.name}
                                     </Link>
-                                    <p className="text-primary font-bold">${product.price?.toFixed(2) || '0.00'}</p>
+                                    <p className="text-primary font-bold mb-3">${product.price?.toFixed(2) || '0.00'}</p>
+                                    
+                                    {/* Amazon-style UI Stepper */}
+                                    <div className="inline-flex border border-white/20 rounded-md items-center">
+                                        <button 
+                                            onClick={() => removeFromCart(product._id)}
+                                            className="px-3 py-1 text-gray-400 hover:text-white transition-colors"
+                                            title={product.cartQuantity === 1 ? "Remove item" : "Decrease quantity"}
+                                        >
+                                            {product.cartQuantity === 1 ? (
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            ) : (
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" /></svg>
+                                            )}
+                                        </button>
+                                        <span className="px-3 py-1 font-bold text-sm border-x border-white/20 select-none w-10 text-center">{product.cartQuantity}</span>
+                                        <button 
+                                            onClick={() => addToCart(product._id)}
+                                            className="px-3 py-1 text-gray-400 hover:text-white transition-colors"
+                                            title="Increase quantity"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => removeFromCart(product._id)}
-                                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors absolute top-4 right-4 sm:relative sm:top-0 sm:right-0"
-                                    title="Remove item"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
+                                <div className="text-right pr-4">
+                                    <p className="font-bold text-lg hidden sm:block">${(product.price * product.cartQuantity).toFixed(2)}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -82,7 +113,10 @@ const Cart = () => {
                             <span>Total</span>
                             <span>${(parseFloat(calculateTotal()) * 1.08).toFixed(2)}</span>
                         </div>
-                        <button className="w-full btn-primary py-4 text-lg" onClick={() => alert("Checkout flow is not implemented yet!")}>
+                        <button 
+                            className="w-full btn-primary py-4 text-lg" 
+                            onClick={() => navigate('/checkout', { state: { items: cart } })}
+                        >
                             Proceed to Checkout
                         </button>
                     </div>

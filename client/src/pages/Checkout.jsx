@@ -2,57 +2,113 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext';
 import { useAuth } from '../context/AuthContext';
+import { ordersAPI } from '../services/api';
 import './Checkout.css';
 
 const Checkout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const { cartData } = useProfile();
+    const { cart, addresses, addAddress, fetchProfile } = useProfile();
 
-    // Check if we came from "Buy Now" (single product) or regular Cart
-    const buyNowProduct = location.state?.product;
-    const checkoutItems = buyNowProduct ? [buyNowProduct] : (cartData || []);
+    // Check if we came from "Buy Now" (single product) or multiple items (from Cart/Wishlist)
+    const passedProduct = location.state?.product;
+    const passedItems = location.state?.items;
+    
+    // Determine checkout items
+    let checkoutItems = [];
+    if (passedProduct) {
+        checkoutItems = [passedProduct];
+    } else if (passedItems && passedItems.length > 0) {
+        checkoutItems = passedItems;
+    } else {
+        checkoutItems = cart || []; // Default to cart if nothing passed
+    }
 
     // State
-    const [addresses, setAddresses] = useState([]);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
     const [currentSection, setCurrentSection] = useState(1); // 1: Address, 2: Payment, 3: Review
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('upi');
     const [isProcessing, setIsProcessing] = useState(false);
+    
+    // Success Screen State
+    const [orderPlaced, setOrderPlaced] = useState(false);
+    const [countdown, setCountdown] = useState(5);
 
     // Form State for new address
     const [newAddress, setNewAddress] = useState({
         name: user?.name || '', street: '', area: '', city: '', state: '', pincode: '', tag: 'Home'
     });
 
-    const subtotal = checkoutItems.reduce((sum, item) => sum + (item.price || 0), 0);
+    // Group checkout items by ID to handle quantities natively
+    const groupedItemsMap = checkoutItems.reduce((acc, item) => {
+        const prod = item.product || item;
+        const id = prod._id || prod.id;
+        if (!acc[id]) {
+            acc[id] = { ...prod, checkoutQuantity: item.quantity || 1 };
+        } else {
+            acc[id].checkoutQuantity += item.quantity || 1;
+        }
+        return acc;
+    }, {});
+    const uniqueCheckoutItems = Object.values(groupedItemsMap);
+
+    const subtotal = uniqueCheckoutItems.reduce((sum, item) => {
+        return sum + ((item.price || 0) * item.checkoutQuantity);
+    }, 0);
     const delivery = subtotal > 500 ? 0 : 40;
     const total = subtotal + delivery;
 
-    const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+    const selectedAddress = addresses.find(a => a._id === selectedAddressId || a.id === selectedAddressId);
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    const handleAddAddress = (e) => {
-        e.preventDefault();
-        const id = Math.random().toString(36).substr(2, 9);
-        const addressToAdd = { ...newAddress, id };
-
-        const updatedAddresses = [...addresses, addressToAdd];
-        setAddresses(updatedAddresses);
-
-        // If it's tagged Home and no address is selected, or if it's the first Home address
-        if (addressToAdd.tag === 'Home') {
-            setSelectedAddressId(id);
-            setCurrentSection(2); // Move to next section automatically if default set
+    // Countdown Redirect Effect
+    useEffect(() => {
+        if (orderPlaced) {
+            if (countdown > 0) {
+                const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+                return () => clearTimeout(timer);
+            } else {
+                navigate('/orders');
+            }
         }
+    }, [orderPlaced, countdown, navigate]);
 
-        setIsAddressModalOpen(false);
-        setNewAddress({ name: user?.name || '', street: '', area: '', city: '', state: '', pincode: '', tag: 'Home' });
+    const handleAddAddress = async (e) => {
+        e.preventDefault();
+        try {
+            setIsProcessing(true);
+            const addressToAdd = { ...newAddress };
+            
+            // If it's the first Home address or user expressly set it
+            if (addresses.length === 0 && addressToAdd.tag === 'Home') {
+                addressToAdd.is_default = true;
+            }
+
+            const apiResponse = await addAddress(addressToAdd);
+            
+            // Find the newly added address ID (the last one returned or by matching fields)
+            const newlyAdded = apiResponse.data.addresses[apiResponse.data.addresses.length - 1];
+            if (newlyAdded) {
+                setSelectedAddressId(newlyAdded._id);
+            }
+            
+            if (addressToAdd.tag === 'Home' || newlyAdded) {
+                setCurrentSection(2); 
+            }
+
+            setIsAddressModalOpen(false);
+            setNewAddress({ name: user?.name || '', street: '', area: '', city: '', state: '', pincode: '', tag: 'Home' });
+        } catch (error) {
+            console.error('Failed to save address', error);
+            alert('Could not save address. Please try again.');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const handlePlaceOrder = async () => {
@@ -60,12 +116,36 @@ const Checkout = () => {
             alert('Please select a delivery address');
             return;
         }
+        
         setIsProcessing(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setIsProcessing(false);
-        alert('Order placed successfully! Your VibeSpace identity is being synchronized.');
-        navigate('/dashboard');
+        try {
+            const orderPayload = {
+                items: uniqueCheckoutItems.map(item => {
+                    return {
+                        product: item._id,
+                        name: item.name,
+                        price: item.price,
+                        image_url: item.image_url,
+                        quantity: item.checkoutQuantity
+                    };
+                }),
+                total_amount: total,
+                shipping_address: selectedAddress,
+                payment_method: paymentMethod
+            };
+
+            await ordersAPI.createOrder(orderPayload);
+            
+            // Re-fetch profile to sync the cleared cart/wishlist from the database
+            await fetchProfile();
+            
+            setOrderPlaced(true);
+        } catch (error) {
+            console.error('Failed to place order:', error);
+            alert('Could not place order. Please try again later.');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     if (checkoutItems.length === 0 && !isProcessing) {
@@ -77,11 +157,35 @@ const Checkout = () => {
         );
     }
 
+    if (orderPlaced) {
+        return (
+            <div className="min-h-screen bg-[#020008] flex flex-col items-center justify-center p-4 text-center text-white">
+                <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-in fade-in zoom-in duration-500">
+                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 className="text-4xl font-display font-bold mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150 fill-mode-both">Order Placed Successfully!</h2>
+                <p className="text-xl text-gray-400 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both">Your items will be on their way soon.</p>
+                <div className="flex flex-col items-center gap-4 animate-in fade-in duration-500 delay-500 fill-mode-both">
+                    <div className="w-16 h-16 relative flex items-center justify-center">
+                        <svg className="animate-spin h-16 w-16 text-[#00d4ff] opacity-20 absolute" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="font-bold text-2xl z-10 text-[#00d4ff]">{countdown}</span>
+                    </div>
+                    <p className="text-sm text-gray-500 font-medium tracking-wide mt-2 uppercase">Redirecting to your orders...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="checkout-container">
             {/* Header */}
             <header className="checkout-header">
-                <div className="checkout-logo" onClick={() => navigate('/')}>VibeSpace</div>
+                <div className="w-32"></div>
                 <div className="secure-tag">Secure Checkout</div>
                 <div className="hidden md:block w-32"></div>
             </header>
@@ -111,21 +215,24 @@ const Checkout = () => {
                                     <span className="section-number">1</span> Select Address
                                 </h3>
 
-                                {addresses.length > 0 ? (
+                                {addresses && addresses.length > 0 ? (
                                     <div className="space-y-3 mb-4">
-                                        {addresses.map(addr => (
-                                            <div
-                                                key={addr.id}
-                                                className={`address-item ${selectedAddressId === addr.id ? 'selected' : ''}`}
-                                                onClick={() => setSelectedAddressId(addr.id)}
-                                            >
-                                                <div className={`address-tag ${addr.tag === 'Home' ? 'home' : ''}`}>{addr.tag}</div>
-                                                <div className="font-bold">{addr.name}</div>
-                                                <div className="text-sm text-gray-400">
-                                                    {addr.street}, {addr.area}, {addr.city}, {addr.state} - {addr.pincode}
+                                        {addresses.map(addr => {
+                                            const addrId = addr._id || addr.id;
+                                            return (
+                                                <div
+                                                    key={addrId}
+                                                    className={`address-item ${selectedAddressId === addrId ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedAddressId(addrId)}
+                                                >
+                                                    <div className={`address-tag ${addr.tag === 'Home' ? 'home' : ''}`}>{addr.tag}</div>
+                                                    <div className="font-bold">{addr.name}</div>
+                                                    <div className="text-sm text-gray-400">
+                                                        {addr.street}, {addr.area}, {addr.city}, {addr.state} - {addr.pincode}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                         <button
                                             className="amazon-btn-primary mt-4 max-w-xs"
                                             disabled={!selectedAddressId}
@@ -205,16 +312,21 @@ const Checkout = () => {
                                 <span className="section-number">3</span> Review items and shipping
                             </h3>
                             <div className="space-y-4">
-                                {checkoutItems.map((item, idx) => (
-                                    <div key={idx} className="flex gap-4 p-4 border border-white/5 rounded-lg">
-                                        <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
-                                        <div>
-                                            <h4 className="font-bold text-sm">{item.name}</h4>
-                                            <p className="text-[#00d4ff] font-bold mt-1">${item.price?.toFixed(2)}</p>
-                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Authenticated by VibeSpace</p>
+                                {uniqueCheckoutItems.map((item, idx) => {
+                                    return (
+                                        <div key={idx} className="flex gap-4 p-4 border border-white/5 rounded-lg">
+                                            <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
+                                            <div>
+                                                <h4 className="font-bold text-sm">{item.name}</h4>
+                                                <div className="flex items-center gap-4 mt-1">
+                                                    <p className="text-[#00d4ff] font-bold">${(item.price || 0).toFixed(2)}</p>
+                                                    <span className="text-xs text-gray-400 bg-white/10 px-2 py-0.5 rounded">Qty: {item.checkoutQuantity}</span>
+                                                </div>
+                                                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Authenticated by VibeSpace</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

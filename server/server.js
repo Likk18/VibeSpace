@@ -18,6 +18,7 @@ import groupRoutes from './routes/groups.js';
 import profileRoutes from './routes/profile.js';
 import moodboardRoutes from './routes/moodboard.js';
 import productRoutes from './routes/products.js';
+import orderRoutes from './routes/orders.js';
 
 // Load environment variables
 dotenv.config();
@@ -45,15 +46,38 @@ const app = express();
 app.use(helmet());
 
 // CORS configuration (Must be before rate limiter)
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175'
+];
+
 app.use(cors({
-    origin: [
-        process.env.CLIENT_URL,
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:5175',
-        /\.vercel\.app$/ // Allow all Vercel subdomains
-    ],
-    credentials: true
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Allow Vercel preview/production deployments
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+        
+        // Allow specifically defined locahost/production URLs
+        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        
+        // Handle undefined CLIENT_URL gracefully in Vercel
+        if (!process.env.CLIENT_URL && origin.includes('vercel')) {
+            return callback(null, true);
+        }
+
+        return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
 // Rate limiting
@@ -78,6 +102,7 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/moodboard', moodboardRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
