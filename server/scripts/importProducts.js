@@ -39,7 +39,17 @@ const importProducts = async () => {
                 
                 // Matches e.g. "IKEA-Dataset-master/IKEA-Dataset-master/Hallway/Wordrobes/..."
                 const match = rawImageUrl.match(/IKEA-Dataset-master\/IKEA-Dataset-master\/(.*?)\/(.*)/);
-                if (match) {
+                
+                if (rawImageUrl.startsWith('./IKEA-Dataset/')) {
+                    const match2 = rawImageUrl.match(/^\.\/IKEA-Dataset\/(.*?)\/(.*)/);
+                    if (match2) {
+                        const categoryName = match2[1];
+                        const restOfPath = match2[2];
+                        imageUrl = `/assets/IKEA-Dataset/${categoryName}/${categoryName}/${restOfPath}`;
+                    } else {
+                        imageUrl = rawImageUrl.replace('./IKEA-Dataset/', '/assets/IKEA-Dataset/');
+                    }
+                } else if (match) {
                     const categoryName = match[1];
                     const restOfPath = match[2];
                     imageUrl = `/assets/content/IKEA-Dataset-master/IKEA-Dataset-master/${categoryName}/${categoryName}/${restOfPath}`;
