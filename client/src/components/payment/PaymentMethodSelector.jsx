@@ -2,9 +2,16 @@ import { useState } from 'react';
 
 const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, orderAmount, onNewCardData, onBankSelect, onUpiIdChange }) => {
     const [expandedSection, setExpandedSection] = useState(null);
-    const [newCard, setNewCard] = useState({ number: '', expiry: '', cvv: '', name: '' });
+
+    // Get today's date for default expiry
+    const now = new Date();
+    const defaultExpiry = String(now.getMonth() + 1).padStart(2, '0') + '/' + String(now.getFullYear()).slice(-2);
+
+    const [newCard, setNewCard] = useState({ number: '', expiry: defaultExpiry, cvv: '', name: '' });
     const [selectedBank, setSelectedBank] = useState('');
     const [upiId, setUpiId] = useState('');
+    const [saveCard, setSaveCard] = useState(false);
+    const [saveUpi, setSaveUpi] = useState(false);
 
     const banks = [
         'HDFC Bank', 'ICICI Bank', 'State Bank of India',
@@ -29,8 +36,26 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
 
     const insufficientBalance = (walletBalance || 0) < orderAmount;
 
+    // Helper to get display-friendly name for selected method
+    const getMethodSummary = () => {
+        switch (selectedMethod) {
+            case 'vibepay_wallet': return { title: 'VibePay Wallet', detail: `Balance: $${(walletBalance || 0).toFixed(2)}` };
+            case 'saved_card': return { title: 'Visa •••• 1840', detail: 'Credit Card' };
+            case 'saved_upi': return { title: 'Union Bank ••••0491', detail: 'UPI' };
+            case 'new_card': return { title: 'Credit/Debit Card', detail: newCard.number ? `•••• ${newCard.number.replace(/\s/g, '').slice(-4)}` : 'New Card' };
+            case 'net_banking': return { title: 'Net Banking', detail: selectedBank || 'Bank selected' };
+            case 'qr_upi': return { title: 'Scan & Pay', detail: 'UPI QR Code' };
+            case 'other_upi': return { title: 'UPI Payment', detail: upiId || 'UPI ID entered' };
+            case 'cod': return { title: 'Cash on Delivery', detail: 'Pay at doorstep' };
+            default: return { title: 'Payment method', detail: '' };
+        }
+    };
+
+    // Expose method summary to parent via a data attribute on the container
+    const summary = getMethodSummary();
+
     return (
-        <div className="payment-methods-container">
+        <div className="payment-methods-container" data-method-title={summary.title} data-method-detail={summary.detail}>
             {/* 1. VibePay Wallet / Balance */}
             <div className={`pay-method-section ${expandedSection === 'wallet' ? 'expanded' : ''}`}>
                 <label className="pay-method-header" onClick={() => handleSelect('vibepay_wallet', 'wallet')}>
@@ -61,8 +86,9 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                 )}
             </div>
 
-            {/* 2. Saved Credit & Debit Cards */}
+            {/* 2. Credit & Debit Cards */}
             <div className={`pay-method-section ${expandedSection === 'saved_card' ? 'expanded' : ''}`}>
+                <div className="pay-section-heading">CREDIT & DEBIT CARDS</div>
                 <label className="pay-method-header" onClick={() => handleSelect('saved_card', 'saved_card')}>
                     <input
                         type="radio" className="radio-btn" name="paymethod"
@@ -70,19 +96,26 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                         onChange={() => handleSelect('saved_card', 'saved_card')}
                     />
                     <div className="pay-method-info">
-                        <div className="pay-method-title">Saved Cards</div>
-                        <div className="pay-method-sub">Visa ending in 1840 — Likith Bhaskar</div>
+                        <div className="pay-method-title">Visa ending in 1840</div>
+                        <div className="pay-method-sub">Likith Bhaskar</div>
                     </div>
                     <div className="card-brands">
                         <span className="card-brand visa">VISA</span>
-                        <span className="card-brand mc">MC</span>
-                        <span className="card-brand rupay">RuPay</span>
                     </div>
                 </label>
+                {expandedSection === 'saved_card' && (
+                    <div className="pay-method-body">
+                        <label className="save-checkbox">
+                            <input type="checkbox" checked={saveCard} onChange={e => setSaveCard(e.target.checked)} />
+                            <span>Save this card for faster checkout next time</span>
+                        </label>
+                    </div>
+                )}
             </div>
 
-            {/* 3. Saved UPI */}
+            {/* 3. UPI */}
             <div className={`pay-method-section ${expandedSection === 'saved_upi' ? 'expanded' : ''}`}>
+                <div className="pay-section-heading">UPI</div>
                 <label className="pay-method-header" onClick={() => handleSelect('saved_upi', 'saved_upi')}>
                     <input
                         type="radio" className="radio-btn" name="paymethod"
@@ -91,12 +124,22 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                     />
                     <div className="pay-method-info">
                         <div className="pay-method-title">
-                            Saved UPI <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 400 }}>UPI</span>
+                            Union Bank of India ····0491 <span style={{ fontSize: '0.65rem', color: '#6b7280', fontWeight: 400, marginLeft: '4px' }}>UPI</span>
                         </div>
-                        <div className="pay-method-sub">Union Bank of India ····0491</div>
                     </div>
                 </label>
+                {expandedSection === 'saved_upi' && (
+                    <div className="pay-method-body">
+                        <label className="save-checkbox">
+                            <input type="checkbox" checked={saveUpi} onChange={e => setSaveUpi(e.target.checked)} />
+                            <span>Save this UPI ID for future payments</span>
+                        </label>
+                    </div>
+                )}
             </div>
+
+            {/* Section Heading: Another payment method */}
+            <div className="pay-section-divider">Another payment method</div>
 
             {/* 4. Add New Credit / Debit Card */}
             <div className={`pay-method-section ${expandedSection === 'new_card' ? 'expanded' : ''}`}>
@@ -114,6 +157,7 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                         <span className="card-brand visa">VISA</span>
                         <span className="card-brand mc">MC</span>
                         <span className="card-brand amex">AMEX</span>
+                        <span className="card-brand rupay">RuPay</span>
                     </div>
                 </label>
                 {expandedSection === 'new_card' && (
@@ -132,7 +176,7 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                                 <div>
-                                    <label className="card-label">Expiry</label>
+                                    <label className="card-label">Valid Thru</label>
                                     <input
                                         className="input-field" placeholder="MM/YY"
                                         value={newCard.expiry}
@@ -145,10 +189,11 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                                 <div>
                                     <label className="card-label">CVV</label>
                                     <input
-                                        className="input-field" placeholder="•••" type="password" maxLength={4}
+                                        className="input-field" placeholder="•••" type="password"
+                                        inputMode="numeric" maxLength={3}
                                         value={newCard.cvv}
                                         onChange={e => {
-                                            const c = { ...newCard, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) };
+                                            const c = { ...newCard, cvv: e.target.value.replace(/\D/g, '').slice(0, 3) };
                                             setNewCard(c); onNewCardData?.(c);
                                         }}
                                     />
@@ -165,6 +210,10 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                                     }}
                                 />
                             </div>
+                            <label className="save-checkbox" style={{ marginTop: '0.5rem' }}>
+                                <input type="checkbox" checked={saveCard} onChange={e => setSaveCard(e.target.checked)} />
+                                <span>Save this card securely for future payments</span>
+                            </label>
                         </div>
                     </div>
                 )}
@@ -214,7 +263,7 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
                                 <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
                             </svg>
-                            Scan the QR code on the payment page
+                            You will need to scan the QR code on the payment page
                         </div>
                     </div>
                 </label>
@@ -240,8 +289,12 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                             className="input-field" placeholder="yourname@upi"
                             value={upiId}
                             onChange={e => { setUpiId(e.target.value); onUpiIdChange?.(e.target.value); }}
-                            style={{ marginBottom: 0 }}
+                            style={{ marginBottom: '0.5rem' }}
                         />
+                        <label className="save-checkbox">
+                            <input type="checkbox" checked={saveUpi} onChange={e => setSaveUpi(e.target.checked)} />
+                            <span>Save this UPI ID for future payments</span>
+                        </label>
                     </div>
                 )}
             </div>
@@ -255,13 +308,28 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange, walletBalance, 
                         onChange={() => handleSelect('cod', 'cod')}
                     />
                     <div className="pay-method-info">
-                        <div className="pay-method-title">Cash on Delivery</div>
-                        <div className="pay-method-sub">Cash, UPI and Cards accepted on delivery</div>
+                        <div className="pay-method-title">Cash on Delivery / Pay on Delivery</div>
+                        <div className="pay-method-sub">Cash, UPI and Cards accepted at delivery</div>
                     </div>
                 </label>
             </div>
         </div>
     );
+};
+
+// Export the helper so Checkout can use it
+export const getPaymentMethodSummary = (method, extras = {}) => {
+    switch (method) {
+        case 'vibepay_wallet': return { title: 'VibePay Wallet', detail: `Balance: $${(extras.walletBalance || 0).toFixed(2)}` };
+        case 'saved_card': return { title: 'Visa •••• 1840', detail: 'Credit Card — Likith Bhaskar' };
+        case 'saved_upi': return { title: 'Union Bank ••••0491', detail: 'UPI' };
+        case 'new_card': return { title: 'Credit/Debit Card', detail: extras.cardLast4 ? `•••• ${extras.cardLast4}` : 'New Card' };
+        case 'net_banking': return { title: 'Net Banking', detail: extras.bankName || 'Bank' };
+        case 'qr_upi': return { title: 'Scan & Pay', detail: 'UPI QR Code' };
+        case 'other_upi': return { title: 'UPI Payment', detail: extras.upiId || 'UPI ID' };
+        case 'cod': return { title: 'Cash on Delivery', detail: 'Pay at doorstep' };
+        default: return { title: 'Payment', detail: '' };
+    }
 };
 
 export default PaymentMethodSelector;

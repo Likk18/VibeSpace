@@ -134,21 +134,69 @@ export const handleQrScan = async (req, res, next) => {
         order.qr_scanned = true;
         await order.save();
 
-        res.send(`
-            <html>
-            <head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-            <body style="background:#020008;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui,sans-serif;margin:0">
-                <div style="text-align:center;padding:2rem">
-                    <div style="width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                    <h1 style="font-size:1.5rem;margin:0 0 0.5rem">Payment Received</h1>
-                    <p style="color:#9ca3af;margin:0 0 1rem">Order ${order.order_id}</p>
-                    <p style="color:#6b7280;font-size:0.875rem">You can close this page now.</p>
-                </div>
-            </body>
-            </html>
-        `);
+        res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>VibeSpace Payment</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#020008;color:#fff;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+        .brand{font-size:1.25rem;font-weight:800;margin-bottom:2rem;opacity:0.7}
+        .brand span{color:#8400ff}
+        .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2.5rem 2rem;text-align:center;width:100%;max-width:360px}
+        .icon-wrap{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+        .spinner-wrap{background:rgba(0,212,255,0.1)}
+        .success-wrap{background:rgba(34,197,94,0.15);animation:pop .4s ease-out}
+        .spinner{width:40px;height:40px;border:3px solid rgba(0,212,255,0.2);border-top-color:#00d4ff;border-radius:50%;animation:spin 1s linear infinite}
+        h2{font-size:1.5rem;font-weight:700;margin-bottom:.5rem}
+        .sub{color:#9ca3af;font-size:.875rem;margin-bottom:1.5rem}
+        .order-row{display:flex;justify-content:space-between;padding:.75rem 0;border-top:1px solid rgba(255,255,255,0.06);font-size:.85rem}
+        .order-row:first-child{border-top:none}
+        .label{color:#6b7280}
+        .value{font-weight:600}
+        .amount{color:#00d4ff;font-size:1.1rem;font-weight:700}
+        .badge{display:inline-block;background:rgba(132,0,255,0.15);color:#c084fc;padding:.15rem .75rem;border-radius:999px;font-size:.7rem;font-weight:700;margin-top:.75rem}
+        .close-msg{color:#6b7280;font-size:.75rem;margin-top:1.5rem}
+        #verifying{display:block}
+        #confirmed{display:none}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    </style>
+</head>
+<body>
+    <div class="brand"><span>Vibe</span>Space Pay</div>
+    <div class="card">
+        <div id="verifying">
+            <div class="icon-wrap spinner-wrap"><div class="spinner"></div></div>
+            <h2>Verifying Payment</h2>
+            <p class="sub">Confirming with VibeSpace...</p>
+        </div>
+        <div id="confirmed">
+            <div class="icon-wrap success-wrap">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h2>Payment Received!</h2>
+            <p class="sub">Your payment has been confirmed</p>
+            <div>
+                <div class="order-row"><span class="label">Order</span><span class="value">${order.order_id}</span></div>
+                <div class="order-row"><span class="label">Amount</span><span class="amount">$${order.total_amount?.toFixed(2) || '0.00'}</span></div>
+                <div class="order-row"><span class="label">Merchant</span><span class="value">VibeSpace</span></div>
+            </div>
+            <div class="badge">✓ Demo Payment</div>
+        </div>
+    </div>
+    <p class="close-msg" id="closeMsg"></p>
+    <script>
+        setTimeout(function(){
+            document.getElementById('verifying').style.display='none';
+            document.getElementById('confirmed').style.display='block';
+            document.getElementById('closeMsg').textContent='You can close this page now';
+        }, 3000);
+    </script>
+</body>
+</html>`);
     } catch (error) {
         next(error);
     }

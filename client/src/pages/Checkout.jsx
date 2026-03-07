@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext';
 import { useAuth } from '../context/AuthContext';
 import { ordersAPI } from '../services/api';
-import PaymentMethodSelector from '../components/payment/PaymentMethodSelector';
+import PaymentMethodSelector, { getPaymentMethodSummary } from '../components/payment/PaymentMethodSelector';
 import OtpModal from '../components/payment/OtpModal';
 import QrPaymentModal from '../components/payment/QrPaymentModal';
 import NetBankingPage from '../components/payment/NetBankingPage';
@@ -401,7 +401,12 @@ const Checkout = () => {
                             <div className="section-collapsed">
                                 <div className="section-title">
                                     <span className="section-number">2</span>
-                                    <span>Payment method selected</span>
+                                    <div>
+                                        <span>{getPaymentMethodSummary(paymentMethod, { walletBalance: user?.vibepay_balance, bankName: selectedBank, upiId, cardLast4: newCardData?.number?.replace(/\s/g, '').slice(-4) }).title}</span>
+                                        <div className="text-sm font-normal text-gray-400 mt-1">
+                                            {getPaymentMethodSummary(paymentMethod, { walletBalance: user?.vibepay_balance, bankName: selectedBank, upiId, cardLast4: newCardData?.number?.replace(/\s/g, '').slice(-4) }).detail}
+                                        </div>
+                                    </div>
                                 </div>
                                 <button className="change-link" onClick={() => setCurrentSection(2)}>Change</button>
                             </div>
