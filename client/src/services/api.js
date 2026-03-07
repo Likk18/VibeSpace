@@ -1,14 +1,12 @@
 import axios from 'axios';
 
 let API_URL;
-if (import.meta.env.VITE_API_URL) {
-    API_URL = import.meta.env.VITE_API_URL;
-} else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-    // In production (Vercel), the backend runs on the same domain usually, or we prefix with /api
-    // Since VibeSpace seems to have a separate backend, we'll try to use the Vercel standard api routes or fallback
+if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    // Force production to use relative /api route (ignoring any errant Vercel env variables)
     API_URL = `${window.location.origin}/api`;
 } else {
-    API_URL = 'http://localhost:5000/api';
+    // Local dev fallback
+    API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 }
 
 // Create axios instance
