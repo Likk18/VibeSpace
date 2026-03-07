@@ -4,12 +4,25 @@
     background-color: #000000;
     color: #f1f2f4;
     font-family: inherit;
-    /* Keep VibeSpace fonts */
+}
+
+/* Demo Banner */
+.demo-banner {
+    background: linear-gradient(90deg, rgba(132, 0, 255, 0.15), rgba(0, 212, 255, 0.15));
+    border-bottom: 1px solid rgba(132, 0, 255, 0.3);
+    padding: 0.6rem 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #c084fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .checkout-header {
     background-color: #000000;
-    /* Dark header like Amazon but integrated */
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -34,6 +47,8 @@
     font-size: 1.25rem;
     font-weight: 500;
     color: #9ca3af;
+    display: flex;
+    align-items: center;
 }
 
 .checkout-main {
@@ -81,7 +96,6 @@
 
 .section-number {
     color: #8400ff;
-    /* VibeSpace Purple */
 }
 
 .change-link {
@@ -131,54 +145,235 @@
     color: #8400ff;
 }
 
-/* Payment Methods (Amazon Style) */
-.payment-box {
+/* ========================================
+   Payment Methods (Full Amazon-style)
+   ======================================== */
+.payment-methods-container {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-.payment-option {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    cursor: pointer;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.pay-method-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background 0.2s;
 }
 
-.payment-option:last-child {
+.pay-method-section:last-child {
     border-bottom: none;
 }
 
-.radio-btn {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    margin-top: 2px;
-    position: relative;
+.pay-method-section.expanded {
+    background: rgba(132, 0, 255, 0.03);
+}
+
+.pay-method-header {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
     cursor: pointer;
+    align-items: center;
+    transition: background 0.15s;
 }
 
-.radio-btn:checked {
-    border-color: #00d3ff;
+.pay-method-header:hover {
+    background: rgba(255, 255, 255, 0.02);
 }
 
-.radio-btn:checked::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
-    background: #00d3ff;
+.pay-method-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pay-method-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #f1f2f4;
+    margin-bottom: 0.15rem;
+}
+
+.pay-method-sub {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.pay-insufficient {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.pay-method-body {
+    padding: 0 1.25rem 1.25rem 3.25rem;
+}
+
+.pay-info-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+.pay-info-banner.warning {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+}
+
+/* Card Brands */
+.card-brands {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.card-brand {
+    font-size: 0.55rem;
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    letter-spacing: 0.02em;
+}
+
+.card-brand.visa {
+    background: #1a1f71;
+    color: #fff;
+}
+
+.card-brand.mc {
+    background: #eb001b;
+    color: #fff;
+}
+
+.card-brand.rupay {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.card-brand.amex {
+    background: #006fcf;
+    color: #fff;
+}
+
+/* Card Form */
+.card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-bottom: 0.25rem;
+}
+
+/* ========================================
+   OTP Modal Styles
+   ======================================== */
+.otp-input {
+    width: 56px;
+    height: 64px;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: #00d4ff;
+}
+
+.otp-input:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+}
+
+@keyframes otpShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    50%,
+    90% {
+        transform: translateX(-4px);
+    }
+
+    30%,
+    70% {
+        transform: translateX(4px);
+    }
+}
+
+.otp-shake {
+    animation: otpShake 0.4s ease-in-out;
+}
+
+/* ========================================
+   Payment Spinner
+   ======================================== */
+.payment-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid #00d4ff;
     border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
-/* Sidebar Sidebar Summary */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* QR Pulse Indicator */
+.qr-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(1.5);
+    }
+}
+
+/* ========================================
+   Sidebar Summary
+   ======================================== */
 .sidebar-summary {
     position: sticky;
     top: 5rem;
@@ -198,7 +393,6 @@
     color: #000000;
     border: 1px solid #fcd200;
     border-radius: 50px;
-    /* Rounded pill like Amazon */
     padding: 0.6rem;
     font-weight: 600;
     font-size: 0.9rem;
@@ -208,6 +402,11 @@
 
 .amazon-btn-primary:hover:not(:disabled) {
     background-color: #f7ca00;
+}
+
+.amazon-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .amazon-btn-secondary {
@@ -233,43 +432,84 @@
     justify-content: space-between;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #b12704;
-    /* Amazon-style red total, but readable on dark */
+    color: #00d4ff;
     margin-top: 1rem;
     padding-top: 0.75rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Modal for Address */
+/* ========================================
+   Modal (shared)
+   ======================================== */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 200;
+    padding: 1rem;
 }
 
 .modal-window {
-    background: #050505;
+    background: #0a0a0f;
     width: 100%;
     max-width: 500px;
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
 }
 
 .input-field {
     width: 100%;
     background: #0a0a0a;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
     color: white;
     margin-top: 0.25rem;
     margin-bottom: 1rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #00d4ff;
+}
+
+/* Radio Button */
+.radio-btn {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    margin-top: 2px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.radio-btn:checked {
+    border-color: #00d3ff;
+}
+
+.radio-btn:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #00d3ff;
+    border-radius: 50%;
 }

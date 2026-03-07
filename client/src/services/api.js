@@ -94,7 +94,8 @@ export const productsAPI = {
 // Orders API
 export const ordersAPI = {
     createOrder: (orderData) => api.post('/orders', orderData),
-    getUserOrders: () => api.get('/orders')
+    getUserOrders: () => api.get('/orders'),
+    checkQrStatus: (orderId) => api.get(`/orders/${orderId}/qr-status`)
 };
 
 export default api;
