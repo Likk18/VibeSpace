@@ -59,9 +59,15 @@ export const createOrder = async (req, res, next) => {
             }
         });
 
+        // Get updated user balance
+        const updatedUser = await User.findById(userId).select('vibepay_balance');
+
         res.status(201).json({
             success: true,
-            data: order
+            data: {
+                ...order.toObject(),
+                vibepay_balance: updatedUser.vibepay_balance
+            }
         });
     } catch (error) {
         next(error);

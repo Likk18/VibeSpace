@@ -14,7 +14,7 @@ import './Checkout.css';
 const Checkout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const { cart, addresses, addAddress, fetchProfile, savedCards, savedUpis, saveCard, saveUpi } = useProfile();
 
     // Check if we came from "Buy Now" (single product) or multiple items
@@ -113,8 +113,15 @@ const Checkout = () => {
         };
 
         const response = await ordersAPI.createOrder(orderPayload);
+        const orderData = response.data.data;
+
+        // Sync wallet balance in AuthContext
+        if (orderData.vibepay_balance !== undefined) {
+            updateUser({ vibepay_balance: orderData.vibepay_balance });
+        }
+
         await fetchProfile();
-        return response.data.data;
+        return orderData;
     };
 
     const handlePlaceOrder = async () => {

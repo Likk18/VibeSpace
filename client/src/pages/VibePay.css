@@ -116,3 +116,12 @@
     background: #00d4ff;
     border-radius: 50%;
 }
+
+/* VibePay inline card/UPI form */
+.vp-card-form {
+    padding: 0.75rem 1rem 1rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 360px;
+}

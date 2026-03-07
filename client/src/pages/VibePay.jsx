@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../context/ProfileContext';
 import { profileAPI } from '../services/api';
 import OtpModal from '../components/payment/OtpModal';
 import './VibePay.css';
@@ -8,18 +9,34 @@ import './VibePay.css';
 const VibePay = () => {
     const navigate = useNavigate();
     const { user, updateUser } = useAuth();
+    const { savedCards, savedUpis, saveCard, saveUpi } = useProfile();
     const [amount, setAmount] = useState('1000');
     const [balance, setBalance] = useState(user?.vibepay_balance || 0);
 
-    // Payment method state
+    // Payment state
     const [addStep, setAddStep] = useState('select'); // select | processing | otp | success
     const [paymentMethod, setPaymentMethod] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [upiId, setUpiId] = useState('');
     const [error, setError] = useState('');
     const [successAmount, setSuccessAmount] = useState(0);
 
-    // Transactions (local log)
+    // Card form
+    const now = new Date();
+    const defaultExpiry = String(now.getMonth() + 1).padStart(2, '0') + '/' + String(now.getFullYear()).slice(-2);
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardExpiry, setCardExpiry] = useState(defaultExpiry);
+    const [cardCvv, setCardCvv] = useState('');
+    const [cardName, setCardName] = useState('');
+    const [wantSaveCard, setWantSaveCard] = useState(false);
+
+    // UPI
+    const [upiId, setUpiId] = useState('');
+    const [wantSaveUpi, setWantSaveUpi] = useState(false);
+
+    // Saved selection
+    const [selectedSavedCard, setSelectedSavedCard] = useState(null);
+    const [selectedSavedUpi, setSelectedSavedUpi] = useState(null);
+
+    // Transactions
     const [transactions, setTransactions] = useState([]);
 
     useEffect(() => {
@@ -31,44 +48,35 @@ const VibePay = () => {
         return v.replace(/(\d{4})/g, '$1 ').trim();
     };
 
+    const formatExpiry = (value) => {
+        const v = value.replace(/\D/g, '').slice(0, 4);
+        if (v.length >= 3) return v.slice(0, 2) + '/' + v.slice(2);
+        return v;
+    };
+
     const handleAddMoney = () => {
         const addAmt = parseFloat(amount);
         setError('');
 
-        if (!addAmt || addAmt <= 0) {
-            setError('Please enter a valid amount');
-            return;
-        }
-        if (addAmt > 10000) {
-            setError('Maximum add limit is $10,000');
-            return;
-        }
-        if ((balance + addAmt) > 10000) {
-            setError(`Cannot exceed $10,000 wallet limit. Current balance: $${balance.toFixed(2)}`);
-            return;
-        }
-        if (!paymentMethod) {
-            setError('Please select a payment method');
-            return;
-        }
+        if (!addAmt || addAmt <= 0) { setError('Please enter a valid amount'); return; }
+        if (addAmt > 10000) { setError('Maximum add limit is $10,000'); return; }
+        if ((balance + addAmt) > 10000) { setError(`Cannot exceed $10,000 wallet limit. Current balance: $${balance.toFixed(2)}`); return; }
+        if (!paymentMethod) { setError('Please select a payment method'); return; }
 
-        // Card/UPI validation
-        if (paymentMethod === 'card' && cardNumber.replace(/\s/g, '').length < 16) {
-            setError('Please enter a valid 16-digit card number');
-            return;
-        }
-        if (paymentMethod === 'upi' && !upiId.includes('@')) {
-            setError('Please enter a valid UPI ID (e.g. user@upi)');
-            return;
-        }
-
-        // Start payment flow
-        if (paymentMethod === 'card') {
+        if (paymentMethod === 'new_card') {
+            if (cardNumber.replace(/\s/g, '').length < 16) { setError('Enter a valid 16-digit card number'); return; }
+            if (cardCvv.length < 3) { setError('Enter a valid CVV'); return; }
+            setAddStep('otp');
+        } else if (paymentMethod === 'saved_card') {
+            if (!selectedSavedCard) { setError('Please select a saved card'); return; }
             setAddStep('otp');
         } else if (paymentMethod === 'upi') {
+            if (!upiId.includes('@')) { setError('Enter a valid UPI ID (e.g. user@upi)'); return; }
             setAddStep('processing');
-            const delay = 3000 + Math.random() * 2000;
-            setTimeout(() => processPayment(addAmt), delay);
+            setTimeout(() => processPayment(addAmt), 3000 + Math.random() * 2000);
+        } else if (paymentMethod === 'saved_upi') {
+            setAddStep('processing');
+            setTimeout(() => processPayment(addAmt), 3000 + Math.random() * 2000);
         } else if (paymentMethod === 'netbanking') {
             setAddStep('processing');
             setTimeout(() => processPayment(addAmt), 2500);
@@ -83,13 +91,35 @@ const VibePay = () => {
             setSuccessAmount(addAmt);
             updateUser({ vibepay_balance: newBal });
 
+            // Save card/UPI if opted
+            if (wantSaveCard && paymentMethod === 'new_card') {
+                const rawNum = cardNumber.replace(/\s/g, '');
+                try {
+                    await saveCard({
+                        last4: rawNum.slice(-4),
+                        brand: rawNum.startsWith('4') ? 'Visa' : rawNum.startsWith('5') ? 'Mastercard' : 'Card',
+                        holder_name: cardName || ''
+                    });
+                } catch (e) { console.error('Card save err', e); }
+            }
+            if (wantSaveUpi && paymentMethod === 'upi') {
+                try {
+                    await saveUpi({ upi_id: upiId, bank_name: 'UPI' });
+                } catch (e) { console.error('UPI save err', e); }
+            }
+
             // Log transaction
+            let methodLabel = 'Payment';
+            if (paymentMethod === 'new_card') methodLabel = `Card ••${cardNumber.replace(/\s/g, '').slice(-4)}`;
+            else if (paymentMethod === 'saved_card' && selectedSavedCard) methodLabel = `${selectedSavedCard.brand} ••${selectedSavedCard.last4}`;
+            else if (paymentMethod === 'upi') methodLabel = upiId;
+            else if (paymentMethod === 'saved_upi' && selectedSavedUpi) methodLabel = selectedSavedUpi.upi_id;
+            else if (paymentMethod === 'netbanking') methodLabel = 'Net Banking';
+
             setTransactions(prev => [{
                 id: `TXN${Date.now().toString().slice(-8)}`,
-                amount: addAmt,
-                method: paymentMethod === 'card' ? `Card ••${cardNumber.replace(/\s/g, '').slice(-4)}` : paymentMethod === 'upi' ? upiId : 'Net Banking',
-                date: new Date().toLocaleString(),
-                type: 'credit'
+                amount: addAmt, method: methodLabel,
+                date: new Date().toLocaleString(), type: 'credit'
             }, ...prev]);
 
             setAddStep('success');
@@ -100,19 +130,23 @@ const VibePay = () => {
     };
 
     const handleOtpSuccess = () => {
-        const addAmt = parseFloat(amount);
         setAddStep('processing');
-        setTimeout(() => processPayment(addAmt), 1500);
+        setTimeout(() => processPayment(parseFloat(amount)), 1500);
     };
 
     const resetForm = () => {
         setAddStep('select');
         setPaymentMethod('');
-        setCardNumber('');
+        setCardNumber(''); setCardExpiry(defaultExpiry); setCardCvv(''); setCardName('');
         setUpiId('');
+        setWantSaveCard(false); setWantSaveUpi(false);
+        setSelectedSavedCard(null); setSelectedSavedUpi(null);
         setAmount('1000');
         setError('');
     };
+
+    const hasSavedCards = savedCards && savedCards.length > 0;
+    const hasSavedUpis = savedUpis && savedUpis.length > 0;
 
     return (
         <div className="vibepay-container">
@@ -130,18 +164,15 @@ const VibePay = () => {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* Main Content Area */}
+                    {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Balance Card */}
                         <div className="vibepay-card">
                             <h2 className="text-xl font-bold mb-6">VibePay Balance</h2>
                             <div className="flex flex-col md:flex-row md:items-end gap-2 mb-8">
                                 <span className="text-sm text-gray-400 pb-1">Available balance</span>
-                                <span className="text-4xl font-bold text-light">
-                                    $ {balance.toFixed(2)}
-                                </span>
+                                <span className="text-4xl font-bold text-light">$ {balance.toFixed(2)}</span>
                             </div>
-
                             <div className="border-t border-white/5 pt-6 space-y-4">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-400">Wallet</span>
@@ -165,28 +196,14 @@ const VibePay = () => {
                                             <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2">Enter Amount</label>
                                             <div className="relative">
                                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-gray-400">$</span>
-                                                <input
-                                                    type="number"
-                                                    className="vibepay-input text-2xl pl-10"
-                                                    value={amount}
-                                                    onChange={(e) => setAmount(e.target.value)}
-                                                    min="1"
-                                                    max="10000"
-                                                />
+                                                <input type="number" className="vibepay-input text-2xl pl-10" value={amount} onChange={e => setAmount(e.target.value)} min="1" max="10000" />
                                             </div>
                                         </div>
 
                                         {/* Quick Amount Buttons */}
                                         <div className="flex flex-wrap gap-2">
                                             {['250', '500', '1000', '2000', '5000'].map(val => (
-                                                <button
-                                                    key={val}
-                                                    onClick={() => setAmount(val)}
-                                                    className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${amount === val
-                                                        ? 'bg-primary border-primary text-white'
-                                                        : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
-                                                    }`}
-                                                >
+                                                <button key={val} onClick={() => setAmount(val)} className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${amount === val ? 'bg-primary border-primary text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}>
                                                     + ${val}
                                                 </button>
                                             ))}
@@ -196,27 +213,75 @@ const VibePay = () => {
                                         <div>
                                             <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-3">Payment Method</label>
                                             <div className="space-y-2">
-                                                {/* Card */}
-                                                <label className={`vp-pay-option ${paymentMethod === 'card' ? 'active' : ''}`}>
-                                                    <input type="radio" name="vp-pay" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="radio-btn" />
+
+                                                {/* Saved Cards */}
+                                                {hasSavedCards && savedCards.map((card, idx) => (
+                                                    <label key={card._id || idx} className={`vp-pay-option ${paymentMethod === 'saved_card' && selectedSavedCard?._id === card._id ? 'active' : ''}`}
+                                                        onClick={() => { setPaymentMethod('saved_card'); setSelectedSavedCard(card); }}>
+                                                        <input type="radio" name="vp-pay" checked={paymentMethod === 'saved_card' && selectedSavedCard?._id === card._id} readOnly className="radio-btn" />
+                                                        <div className="flex-1">
+                                                            <div className="font-semibold text-sm">{card.brand} •••• {card.last4}</div>
+                                                            <div className="text-xs text-gray-500">{card.holder_name || 'Saved Card'}</div>
+                                                        </div>
+                                                        <span className="card-brand visa" style={{ fontSize: '0.5rem', padding: '0.15rem 0.3rem' }}>{card.brand?.toUpperCase()}</span>
+                                                    </label>
+                                                ))}
+
+                                                {/* Saved UPIs */}
+                                                {hasSavedUpis && savedUpis.map((upi, idx) => (
+                                                    <label key={upi._id || idx} className={`vp-pay-option ${paymentMethod === 'saved_upi' && selectedSavedUpi?._id === upi._id ? 'active' : ''}`}
+                                                        onClick={() => { setPaymentMethod('saved_upi'); setSelectedSavedUpi(upi); }}>
+                                                        <input type="radio" name="vp-pay" checked={paymentMethod === 'saved_upi' && selectedSavedUpi?._id === upi._id} readOnly className="radio-btn" />
+                                                        <div className="flex-1">
+                                                            <div className="font-semibold text-sm">{upi.bank_name} — UPI</div>
+                                                            <div className="text-xs text-gray-500">{upi.upi_id}</div>
+                                                        </div>
+                                                    </label>
+                                                ))}
+
+                                                {/* Divider if there are saved methods */}
+                                                {(hasSavedCards || hasSavedUpis) && (
+                                                    <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#6b7280', padding: '0.5rem 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                                                        — or use a new method —
+                                                    </div>
+                                                )}
+
+                                                {/* New Card */}
+                                                <label className={`vp-pay-option ${paymentMethod === 'new_card' ? 'active' : ''}`}>
+                                                    <input type="radio" name="vp-pay" value="new_card" checked={paymentMethod === 'new_card'} onChange={() => setPaymentMethod('new_card')} className="radio-btn" />
                                                     <div className="flex-1">
                                                         <div className="font-semibold text-sm">Credit / Debit Card</div>
-                                                        <div className="text-xs text-gray-500">Visa, Mastercard, RuPay</div>
+                                                        <div className="text-xs text-gray-500">Add a new card</div>
                                                     </div>
                                                     <div className="flex gap-1">
                                                         <span className="card-brand visa" style={{ fontSize: '0.5rem', padding: '0.15rem 0.3rem' }}>VISA</span>
                                                         <span className="card-brand mc" style={{ fontSize: '0.5rem', padding: '0.15rem 0.3rem' }}>MC</span>
                                                     </div>
                                                 </label>
-                                                {paymentMethod === 'card' && (
-                                                    <div className="pl-8 pb-2">
-                                                        <input
-                                                            className="input-field"
-                                                            placeholder="1234 5678 9012 3456"
-                                                            value={cardNumber}
-                                                            onChange={e => setCardNumber(formatCardNumber(e.target.value))}
-                                                            style={{ maxWidth: '300px' }}
-                                                        />
+                                                {paymentMethod === 'new_card' && (
+                                                    <div className="vp-card-form">
+                                                        <div>
+                                                            <label className="text-xs text-gray-500 block mb-1">Card Number</label>
+                                                            <input className="input-field" placeholder="1234 5678 9012 3456" value={cardNumber} onChange={e => setCardNumber(formatCardNumber(e.target.value))} />
+                                                        </div>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                                                            <div>
+                                                                <label className="text-xs text-gray-500 block mb-1">Expiry</label>
+                                                                <input className="input-field" placeholder="MM/YY" value={cardExpiry} onChange={e => setCardExpiry(formatExpiry(e.target.value))} />
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-xs text-gray-500 block mb-1">CVV</label>
+                                                                <input className="input-field" placeholder="•••" type="password" inputMode="numeric" maxLength={3} value={cardCvv} onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))} />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs text-gray-500 block mb-1">Cardholder Name</label>
+                                                            <input className="input-field" placeholder="Name on card" value={cardName} onChange={e => setCardName(e.target.value)} />
+                                                        </div>
+                                                        <label className="save-checkbox" style={{ marginTop: '0.25rem' }}>
+                                                            <input type="checkbox" checked={wantSaveCard} onChange={e => setWantSaveCard(e.target.checked)} />
+                                                            <span className="text-xs text-gray-400">Save this card for future use</span>
+                                                        </label>
                                                     </div>
                                                 )}
 
@@ -229,14 +294,15 @@ const VibePay = () => {
                                                     </div>
                                                 </label>
                                                 {paymentMethod === 'upi' && (
-                                                    <div className="pl-8 pb-2">
-                                                        <input
-                                                            className="input-field"
-                                                            placeholder="yourname@upi"
-                                                            value={upiId}
-                                                            onChange={e => setUpiId(e.target.value)}
-                                                            style={{ maxWidth: '300px' }}
-                                                        />
+                                                    <div className="vp-card-form">
+                                                        <div>
+                                                            <label className="text-xs text-gray-500 block mb-1">UPI ID</label>
+                                                            <input className="input-field" placeholder="yourname@upi" value={upiId} onChange={e => setUpiId(e.target.value)} />
+                                                        </div>
+                                                        <label className="save-checkbox">
+                                                            <input type="checkbox" checked={wantSaveUpi} onChange={e => setWantSaveUpi(e.target.checked)} />
+                                                            <span className="text-xs text-gray-400">Save this UPI for future use</span>
+                                                        </label>
                                                     </div>
                                                 )}
 
@@ -251,22 +317,16 @@ const VibePay = () => {
                                             </div>
                                         </div>
 
-                                        {error && (
-                                            <p className="text-red-500 text-sm font-medium">{error}</p>
-                                        )}
+                                        {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
 
                                         <p className="text-xs text-gray-500 flex items-center gap-2">
                                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                             </svg>
-                                            Wallet limit: $10,000.00. Use wallet balance at checkout to get cashback rewards.
+                                            Wallet limit: $10,000. Use VibePay balance at checkout for instant payments.
                                         </p>
 
-                                        <button
-                                            onClick={handleAddMoney}
-                                            disabled={!paymentMethod || !amount}
-                                            className="btn-primary w-full md:w-auto px-10 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
+                                        <button onClick={handleAddMoney} disabled={!paymentMethod || !amount} className="btn-primary w-full md:w-auto px-10 py-3 disabled:opacity-50 disabled:cursor-not-allowed">
                                             Add ${parseFloat(amount || 0).toFixed(2)} to Wallet
                                         </button>
                                     </div>
@@ -277,7 +337,9 @@ const VibePay = () => {
                                 <div className="text-center py-12">
                                     <div className="payment-spinner" style={{ margin: '0 auto 1.5rem', width: '48px', height: '48px' }} />
                                     <h3 className="text-xl font-bold mb-2">Processing Payment</h3>
-                                    <p className="text-gray-400 text-sm">Verifying your {paymentMethod === 'upi' ? 'UPI' : paymentMethod === 'card' ? 'card' : 'net banking'} payment...</p>
+                                    <p className="text-gray-400 text-sm">
+                                        Verifying your {paymentMethod === 'upi' || paymentMethod === 'saved_upi' ? 'UPI' : paymentMethod === 'new_card' || paymentMethod === 'saved_card' ? 'card' : 'net banking'} payment...
+                                    </p>
                                 </div>
                             )}
 
@@ -289,23 +351,19 @@ const VibePay = () => {
                                         alignItems: 'center', justifyContent: 'center',
                                         margin: '0 auto 1.5rem', animation: 'scaleIn 0.5s ease-out'
                                     }}>
-                                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round">
-                                            <path d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round"><path d="M5 13l4 4L19 7" /></svg>
                                     </div>
                                     <h3 className="text-xl font-bold mb-1" style={{ color: '#22c55e' }}>Money Added Successfully!</h3>
                                     <p className="text-2xl font-bold mb-1">${successAmount.toFixed(2)}</p>
                                     <p className="text-gray-400 text-sm mb-6">
                                         New wallet balance: <span className="font-bold text-white">${balance.toFixed(2)}</span>
                                     </p>
-                                    <button onClick={resetForm} className="btn-primary px-8 py-3">
-                                        Add More Money
-                                    </button>
+                                    <button onClick={resetForm} className="btn-primary px-8 py-3">Add More Money</button>
                                 </div>
                             )}
                         </div>
 
-                        {/* Rewards Banner */}
+                        {/* Rewards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="vibepay-reward-card">
                                 <div className="reward-icon">💎</div>
@@ -326,9 +384,8 @@ const VibePay = () => {
                         </div>
                     </div>
 
-                    {/* Sidebar Area */}
+                    {/* Sidebar */}
                     <div className="space-y-6">
-                        {/* Recent Transactions */}
                         <div className="vibepay-card">
                             <h3 className="font-bold mb-4">Recent Transactions</h3>
                             {transactions.length > 0 ? (
@@ -356,7 +413,7 @@ const VibePay = () => {
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                                 </li>
                                 <li className="vibepay-link-item" onClick={() => navigate('/orders')} style={{ cursor: 'pointer' }}>
-                                    <span>Transaction History</span>
+                                    <span>Order History</span>
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                                 </li>
                             </ul>
@@ -386,12 +443,8 @@ const VibePay = () => {
                 </div>
             </main>
 
-            {/* OTP modal for card payments */}
             {addStep === 'otp' && (
-                <OtpModal
-                    onSuccess={handleOtpSuccess}
-                    onClose={() => setAddStep('select')}
-                />
+                <OtpModal onSuccess={handleOtpSuccess} onClose={() => setAddStep('select')} />
             )}
         </div>
     );
