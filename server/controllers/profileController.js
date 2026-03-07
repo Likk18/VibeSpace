@@ -401,3 +401,40 @@ export const saveUpi = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * @route   POST /api/profile/wallet/add
+ * @desc    Add money to VibePay wallet
+ * @access  Private
+ */
+export const addMoney = async (req, res, next) => {
+    try {
+        const { amount } = req.body;
+        const addAmount = parseFloat(amount);
+
+        if (!addAmount || addAmount <= 0) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid amount' });
+        }
+        if (addAmount > 10000) {
+            return res.status(400).json({ success: false, message: 'Maximum add limit is $10,000' });
+        }
+
+        const user = await User.findById(req.user.id);
+        const newBalance = (user.vibepay_balance || 0) + addAmount;
+
+        if (newBalance > 10000) {
+            return res.status(400).json({ success: false, message: `Cannot exceed $10,000 wallet limit. Current balance: $${user.vibepay_balance.toFixed(2)}` });
+        }
+
+        user.vibepay_balance = newBalance;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: `$${addAmount.toFixed(2)} added to VibePay wallet`,
+            data: { vibepay_balance: user.vibepay_balance }
+        });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -413,37 +413,29 @@ const Checkout = () => {
 
                     {/* Section 2: Payment */}
                     <div className="checkout-section">
-                        {currentSection !== 2 && currentSection > 2 ? (
-                            <div className="section-collapsed">
-                                <div className="section-title">
-                                    <span className="section-number">2</span>
-                                    <div>
-                                        <span>{getPaymentMethodSummary(paymentMethod, { walletBalance: user?.vibepay_balance, bankName: selectedBank, upiId, cardLast4: newCardData?.number?.replace(/\s/g, '').slice(-4) }).title}</span>
-                                        <div className="text-sm font-normal text-gray-400 mt-1">
-                                            {getPaymentMethodSummary(paymentMethod, { walletBalance: user?.vibepay_balance, bankName: selectedBank, upiId, cardLast4: newCardData?.number?.replace(/\s/g, '').slice(-4) }).detail}
-                                        </div>
-                                    </div>
-                                </div>
-                                <button className="change-link" onClick={() => setCurrentSection(2)}>Change</button>
-                            </div>
-                        ) : (
-                            <div className={`section-expanded ${currentSection < 2 ? 'opacity-40 pointer-events-none' : ''}`}>
-                                <h3 className="section-title mb-4">
-                                    <span className="section-number">2</span> Payment method
-                                </h3>
-                                <PaymentMethodSelector
-                                    selectedMethod={paymentMethod}
-                                    onMethodChange={setPaymentMethod}
-                                    walletBalance={user?.vibepay_balance || 0}
-                                    orderAmount={total}
-                                    onNewCardData={setNewCardData}
-                                    onBankSelect={setSelectedBank}
-                                    onUpiIdChange={setUpiId}
-                                    savedCards={savedCards}
-                                    savedUpis={savedUpis}
-                                    onSaveCardToggle={setWantSaveCard}
-                                    onSaveUpiToggle={setWantSaveUpi}
-                                />
+                        <div className={`section-expanded ${currentSection < 2 ? 'opacity-40 pointer-events-none' : ''}`}>
+                            <h3 className="section-title mb-4">
+                                <span className="section-number">2</span> Payment method
+                                {currentSection > 2 && (
+                                    <span style={{ marginLeft: '0.75rem', fontSize: '0.8rem', fontWeight: 400, color: '#22c55e' }}>
+                                        ✓ {getPaymentMethodSummary(paymentMethod, { walletBalance: user?.vibepay_balance, bankName: selectedBank, upiId, cardLast4: newCardData?.number?.replace(/\s/g, '').slice(-4) }).title}
+                                    </span>
+                                )}
+                            </h3>
+                            <PaymentMethodSelector
+                                selectedMethod={paymentMethod}
+                                onMethodChange={setPaymentMethod}
+                                walletBalance={user?.vibepay_balance || 0}
+                                orderAmount={total}
+                                onNewCardData={setNewCardData}
+                                onBankSelect={setSelectedBank}
+                                onUpiIdChange={setUpiId}
+                                savedCards={savedCards}
+                                savedUpis={savedUpis}
+                                onSaveCardToggle={setWantSaveCard}
+                                onSaveUpiToggle={setWantSaveUpi}
+                            />
+                            {currentSection === 2 && (
                                 <button
                                     className="amazon-btn-primary mt-6 max-w-xs"
                                     onClick={() => setCurrentSection(3)}
@@ -453,8 +445,8 @@ const Checkout = () => {
                                 >
                                     Use this payment method
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
 
                     {/* Section 3: Review */}

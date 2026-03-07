@@ -76,7 +76,8 @@ export const profileAPI = {
     addAddress: (data) => api.post('/profile/address', data),
     deleteAddress: (id) => api.delete(`/profile/address/${id}`),
     saveCard: (data) => api.post('/profile/saved-card', data),
-    saveUpi: (data) => api.post('/profile/saved-upi', data)
+    saveUpi: (data) => api.post('/profile/saved-upi', data),
+    addMoney: (amount) => api.post('/profile/wallet/add', { amount })
 };
 
 // Moodboard API

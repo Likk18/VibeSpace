@@ -65,3 +65,54 @@
 .bg-surface-light {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+/* VibePay Payment Method Options */
+.vp-pay-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.vp-pay-option:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.vp-pay-option.active {
+    border-color: rgba(0, 212, 255, 0.4);
+    background: rgba(0, 212, 255, 0.05);
+}
+
+.vp-pay-option .radio-btn {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.vp-pay-option .radio-btn:checked {
+    border-color: #00d4ff;
+}
+
+.vp-pay-option .radio-btn:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #00d4ff;
+    border-radius: 50%;
+}
