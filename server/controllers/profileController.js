@@ -144,7 +144,9 @@ export const getMyProfile = async (req, res, next) => {
                 profile,
                 cart: validCart,
                 wishlist: validWishlist,
-                addresses: user.addresses
+                addresses: user.addresses,
+                saved_cards: user.saved_cards || [],
+                saved_upis: user.saved_upis || []
             }
         });
     } catch (error) {
@@ -340,6 +342,60 @@ export const deleteAddress = async (req, res, next) => {
             success: true,
             message: 'Address removed',
             data: { addresses: user.addresses }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/profile/saved-card
+ * @desc    Save a card for future payments
+ * @access  Private
+ */
+export const saveCard = async (req, res, next) => {
+    try {
+        const { last4, brand, holder_name } = req.body;
+        const user = await User.findById(req.user.id);
+
+        // Check if card already saved
+        const exists = user.saved_cards.some(c => c.last4 === last4);
+        if (!exists) {
+            user.saved_cards.push({ last4, brand: brand || 'Visa', holder_name: holder_name || '' });
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: 'Card saved successfully',
+            data: { saved_cards: user.saved_cards }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/profile/saved-upi
+ * @desc    Save a UPI ID for future payments
+ * @access  Private
+ */
+export const saveUpi = async (req, res, next) => {
+    try {
+        const { upi_id, bank_name } = req.body;
+        const user = await User.findById(req.user.id);
+
+        // Check if UPI already saved
+        const exists = user.saved_upis.some(u => u.upi_id === upi_id);
+        if (!exists) {
+            user.saved_upis.push({ upi_id, bank_name: bank_name || 'UPI' });
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: 'UPI saved successfully',
+            data: { saved_upis: user.saved_upis }
         });
     } catch (error) {
         next(error);

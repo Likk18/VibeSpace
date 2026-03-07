@@ -95,7 +95,7 @@ const QrPaymentModal = ({ orderId, amount, onSuccess, onClose }) => {
 
                         <div style={{ marginBottom: '1.5rem' }}>
                             <p style={{ color: '#6b7280', fontSize: '0.75rem', marginBottom: '0.25rem' }}>UPI ID</p>
-                            <p style={{ color: '#00d4ff', fontWeight: 600 }}>vibespacedemo@upi</p>
+                            <p style={{ color: '#00d4ff', fontWeight: 600 }}>vibespace@upi</p>
                         </div>
 
                         <p style={{ color: '#6b7280', fontSize: '0.8rem', marginBottom: '1rem' }}>
@@ -110,18 +110,6 @@ const QrPaymentModal = ({ orderId, amount, onSuccess, onClose }) => {
                             <div className="qr-pulse" />
                             Waiting for scan...
                         </div>
-
-                        {/* Simulate Scan Button */}
-                        <button
-                            onClick={handleSimulateScan}
-                            style={{
-                                background: 'rgba(132,0,255,0.15)', border: '1px solid rgba(132,0,255,0.3)',
-                                borderRadius: '8px', padding: '0.6rem 1.5rem', color: '#c084fc',
-                                cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600
-                            }}
-                        >
-                            🎮 Simulate Scan (Demo)
-                        </button>
                     </>
                 )}
 

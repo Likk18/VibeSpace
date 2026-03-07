@@ -184,7 +184,7 @@ export const handleQrScan = async (req, res, next) => {
                 <div class="order-row"><span class="label">Amount</span><span class="amount">$${order.total_amount?.toFixed(2) || '0.00'}</span></div>
                 <div class="order-row"><span class="label">Merchant</span><span class="value">VibeSpace</span></div>
             </div>
-            <div class="badge">✓ Demo Payment</div>
+            <div class="badge">✓ Payment Confirmed</div>
         </div>
     </div>
     <p class="close-msg" id="closeMsg"></p>

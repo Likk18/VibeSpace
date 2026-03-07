@@ -81,6 +81,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    saved_cards: [{
+        last4: { type: String, required: true },
+        brand: { type: String, default: 'Visa' },
+        holder_name: { type: String, default: '' },
+        added_at: { type: Date, default: Date.now }
+    }],
+    saved_upis: [{
+        upi_id: { type: String, required: true },
+        bank_name: { type: String, default: 'Unknown Bank' },
+        added_at: { type: Date, default: Date.now }
+    }],
     vibepay_balance: {
         type: Number,
         default: 0

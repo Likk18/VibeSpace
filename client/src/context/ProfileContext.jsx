@@ -18,6 +18,8 @@ export const ProfileProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [addresses, setAddresses] = useState([]);
+    const [savedCards, setSavedCards] = useState([]);
+    const [savedUpis, setSavedUpis] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -34,6 +36,8 @@ export const ProfileProvider = ({ children }) => {
             setCart(response.data.data.cart || []);
             setWishlist(response.data.data.wishlist || []);
             setAddresses(response.data.data.addresses || []);
+            setSavedCards(response.data.data.saved_cards || []);
+            setSavedUpis(response.data.data.saved_upis || []);
         } catch (error) {
             console.error('Failed to fetch profile:', error);
         } finally {
@@ -130,6 +134,28 @@ export const ProfileProvider = ({ children }) => {
         }
     };
 
+    const saveCard = async (cardData) => {
+        try {
+            const response = await profileAPI.saveCard(cardData);
+            setSavedCards(response.data.data.saved_cards);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to save card:', error);
+            throw error;
+        }
+    };
+
+    const saveUpi = async (upiData) => {
+        try {
+            const response = await profileAPI.saveUpi(upiData);
+            setSavedUpis(response.data.data.saved_upis);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to save UPI:', error);
+            throw error;
+        }
+    };
+
     const value = {
         profile,
         cart,
@@ -145,7 +171,11 @@ export const ProfileProvider = ({ children }) => {
         removeFromWishlist,
         addresses,
         addAddress,
-        deleteAddress
+        deleteAddress,
+        savedCards,
+        savedUpis,
+        saveCard,
+        saveUpi
     };
 
     return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

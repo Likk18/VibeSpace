@@ -555,3 +555,67 @@
     background: #00d3ff;
     border-radius: 50%;
 }
+
+/* ========================================
+   OTP Toast Notification
+   ======================================== */
+.otp-toast {
+    position: fixed;
+    top: -120px;
+    right: 1.5rem;
+    z-index: 999;
+    width: 340px;
+    transition: top 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+.otp-toast.visible {
+    top: 1.5rem;
+    pointer-events: auto;
+}
+
+.otp-toast-inner {
+    background: rgba(10, 10, 20, 0.95);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 212, 255, 0.1);
+    backdrop-filter: blur(20px);
+}
+
+.otp-toast-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.otp-toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(0, 212, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.otp-toast-sender {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #fff;
+    flex: 1;
+}
+
+.otp-toast-time {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.otp-toast-text {
+    font-size: 0.8rem;
+    color: #d1d5db;
+    line-height: 1.4;
+    margin: 0;
+}

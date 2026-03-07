@@ -74,7 +74,9 @@ export const profileAPI = {
     addToWishlist: (productId, folder) => api.post('/profile/wishlist', { productId, folder }),
     removeFromWishlist: (productId) => api.delete(`/profile/wishlist/${productId}`),
     addAddress: (data) => api.post('/profile/address', data),
-    deleteAddress: (id) => api.delete(`/profile/address/${id}`)
+    deleteAddress: (id) => api.delete(`/profile/address/${id}`),
+    saveCard: (data) => api.post('/profile/saved-card', data),
+    saveUpi: (data) => api.post('/profile/saved-upi', data)
 };
 
 // Moodboard API

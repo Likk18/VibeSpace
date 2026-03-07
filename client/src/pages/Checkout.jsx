@@ -15,7 +15,7 @@ const Checkout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const { cart, addresses, addAddress, fetchProfile } = useProfile();
+    const { cart, addresses, addAddress, fetchProfile, savedCards, savedUpis, saveCard, saveUpi } = useProfile();
 
     // Check if we came from "Buy Now" (single product) or multiple items
     const passedProduct = location.state?.product;
@@ -45,6 +45,8 @@ const Checkout = () => {
     const [newCardData, setNewCardData] = useState(null);
     const [selectedBank, setSelectedBank] = useState('');
     const [upiId, setUpiId] = useState('');
+    const [wantSaveCard, setWantSaveCard] = useState(false);
+    const [wantSaveUpi, setWantSaveUpi] = useState(false);
 
     // Form State for new address
     const [newAddress, setNewAddress] = useState({
@@ -145,11 +147,18 @@ const Checkout = () => {
                 case 'saved_upi':
                 case 'other_upi': {
                     setPaymentFlow('waiting');
-                    // Simulate 4-6 second UPI wait
                     const delay = 4000 + Math.random() * 2000;
                     setTimeout(async () => {
                         try {
                             const order = await createOrder();
+
+                            // Save UPI if user opted in
+                            if (wantSaveUpi && upiId && paymentMethod === 'other_upi') {
+                                try {
+                                    await saveUpi({ upi_id: upiId, bank_name: 'UPI' });
+                                } catch (e) { console.error('UPI save failed', e); }
+                            }
+
                             setOrderResult({
                                 ...order,
                                 payment_method: paymentMethod,
@@ -163,7 +172,7 @@ const Checkout = () => {
                         }
                         setIsProcessing(false);
                     }, delay);
-                    return; // Don't setIsProcessing(false) yet
+                    return;
                 }
 
                 case 'net_banking':
@@ -223,6 +232,19 @@ const Checkout = () => {
         setPaymentFlow('processing');
         try {
             const order = await createOrder();
+
+            // Save card if user opted in
+            if (wantSaveCard && newCardData && paymentMethod === 'new_card') {
+                const rawNum = newCardData.number.replace(/\s/g, '');
+                try {
+                    await saveCard({
+                        last4: rawNum.slice(-4),
+                        brand: rawNum.startsWith('4') ? 'Visa' : rawNum.startsWith('5') ? 'Mastercard' : 'Card',
+                        holder_name: newCardData.name || ''
+                    });
+                } catch (e) { console.error('Card save failed', e); }
+            }
+
             setOrderResult({
                 ...order,
                 payment_method: paymentMethod
@@ -313,12 +335,6 @@ const Checkout = () => {
 
     return (
         <div className="checkout-container">
-            {/* Demo Banner */}
-            <div className="demo-banner">
-                <span>🎮</span>
-                <span>Demo Payment System — No real payment will be processed</span>
-            </div>
-
             {/* Header */}
             <header className="checkout-header">
                 <div className="w-32"></div>
@@ -423,6 +439,10 @@ const Checkout = () => {
                                     onNewCardData={setNewCardData}
                                     onBankSelect={setSelectedBank}
                                     onUpiIdChange={setUpiId}
+                                    savedCards={savedCards}
+                                    savedUpis={savedUpis}
+                                    onSaveCardToggle={setWantSaveCard}
+                                    onSaveUpiToggle={setWantSaveUpi}
                                 />
                                 <button
                                     className="amazon-btn-primary mt-6 max-w-xs"

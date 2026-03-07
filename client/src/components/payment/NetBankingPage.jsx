@@ -62,15 +62,6 @@ const NetBankingPage = ({ bankName, amount, onSuccess, onClose }) => {
                 </div>
 
                 <div style={{ padding: '2rem' }}>
-                    {/* Demo Notice */}
-                    <div style={{
-                        background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)',
-                        borderRadius: '8px', padding: '0.6rem 1rem', marginBottom: '1.5rem',
-                        fontSize: '0.75rem', color: '#fbbf24', textAlign: 'center'
-                    }}>
-                        🎮 Demo Bank — Enter any credentials to proceed
-                    </div>
-
                     {step === 'login' && (
                         <form onSubmit={handleLogin}>
                             <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#9ca3af', display: 'block', marginBottom: '0.25rem' }}>

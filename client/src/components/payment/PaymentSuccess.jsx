@@ -15,9 +15,9 @@ const PaymentSuccess = ({ orderData }) => {
     }, [countdown, navigate]);
 
     const methodNames = {
-        'saved_card': 'Visa •••• 1840',
+        'saved_card': orderData?.cardInfo ? `${orderData.cardInfo.brand} •••• ${orderData.cardInfo.last4}` : 'Credit Card',
         'new_card': 'Credit/Debit Card',
-        'saved_upi': 'UPI — Union Bank ••••0491',
+        'saved_upi': orderData?.upiInfo ? `UPI — ${orderData.upiInfo.bank_name}` : 'UPI',
         'other_upi': `UPI — ${orderData?.upiId || 'UPI Payment'}`,
         'net_banking': `Net Banking — ${orderData?.bankName || 'Bank'}`,
         'qr_upi': 'UPI QR Scan',
@@ -85,11 +85,11 @@ const PaymentSuccess = ({ orderData }) => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
                         <span style={{ color: '#6b7280' }}>Status</span>
                         <span style={{
-                            background: 'rgba(132,0,255,0.15)', color: '#c084fc',
+                            background: 'rgba(34,197,94,0.15)', color: '#22c55e',
                             padding: '0.2rem 0.75rem', borderRadius: '999px',
                             fontSize: '0.75rem', fontWeight: 700
                         }}>
-                            Demo Payment
+                            {orderData?.payment_method === 'cod' ? 'Pending' : 'Paid'}
                         </span>
                     </div>
                 </div>
