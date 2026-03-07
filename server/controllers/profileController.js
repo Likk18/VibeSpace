@@ -96,7 +96,9 @@ export const mergeProfiles = async (req, res, next) => {
 export const getMyProfile = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId)
+            .populate('cart')
+            .populate('wishlist.product');
 
         let profile;
 

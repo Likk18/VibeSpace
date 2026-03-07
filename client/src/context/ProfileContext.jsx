@@ -24,7 +24,7 @@ export const ProfileProvider = ({ children }) => {
         if (user?.quiz_complete) {
             fetchProfile();
         }
-    }, [user?.quiz_complete]);
+    }, [user?.id, user?.quiz_complete]);
 
     const fetchProfile = async () => {
         setLoading(true);
