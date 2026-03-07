@@ -4,5 +4,4 @@ node_modules/
 dist/
 build/
 *.log
-content/
-client/assets/
+
