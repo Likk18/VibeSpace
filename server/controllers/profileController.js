@@ -100,6 +100,23 @@ export const getMyProfile = async (req, res, next) => {
             .populate('cart')
             .populate('wishlist.product');
 
+        // Filter out stale references (deleted products populate as null)
+        const validCart = (user.cart || []).filter(item => item != null);
+        const validWishlist = (user.wishlist || []).filter(item => item.product != null);
+
+        // Clean up stale entries in DB if any were found
+        const cartChanged = validCart.length !== (user.cart || []).length;
+        const wishlistChanged = validWishlist.length !== (user.wishlist || []).length;
+        if (cartChanged || wishlistChanged) {
+            user.cart = validCart.map(p => p._id);
+            user.wishlist = validWishlist.map(item => ({
+                product: item.product._id,
+                folder: item.folder,
+                added_at: item.added_at
+            }));
+            await user.save();
+        }
+
         let profile;
 
         if (user.mode === 'group' && user.group_id) {
@@ -125,8 +142,8 @@ export const getMyProfile = async (req, res, next) => {
             success: true,
             data: {
                 profile,
-                cart: user.cart,
-                wishlist: user.wishlist,
+                cart: validCart,
+                wishlist: validWishlist,
                 addresses: user.addresses
             }
         });
