@@ -51,6 +51,15 @@ const orderSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true
+    },
+    transaction_id: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    qr_scanned: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

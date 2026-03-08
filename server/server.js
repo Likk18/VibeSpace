@@ -50,29 +50,24 @@ const allowedOrigins = [
     process.env.CLIENT_URL,
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://localhost:5175',
-    'http://localhost:5176',
-    'http://localhost:5177',
-    'http://localhost:5178',
-    'http://localhost:5179',
-    'http://localhost:5180'
+    'http://localhost:5175'
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-
+        
         // Allow Vercel preview/production deployments
         if (origin.endsWith('.vercel.app')) {
             return callback(null, true);
         }
-
+        
         // Allow specifically defined locahost/production URLs
         if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
-
+        
         // Handle undefined CLIENT_URL gracefully in Vercel
         if (!process.env.CLIENT_URL && origin.includes('vercel')) {
             return callback(null, true);

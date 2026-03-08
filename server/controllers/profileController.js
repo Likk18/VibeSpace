@@ -96,7 +96,26 @@ export const mergeProfiles = async (req, res, next) => {
 export const getMyProfile = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId)
+            .populate('cart')
+            .populate('wishlist.product');
+
+        // Filter out stale references (deleted products populate as null)
+        const validCart = (user.cart || []).filter(item => item != null);
+        const validWishlist = (user.wishlist || []).filter(item => item.product != null);
+
+        // Clean up stale entries in DB if any were found
+        const cartChanged = validCart.length !== (user.cart || []).length;
+        const wishlistChanged = validWishlist.length !== (user.wishlist || []).length;
+        if (cartChanged || wishlistChanged) {
+            user.cart = validCart.map(p => p._id);
+            user.wishlist = validWishlist.map(item => ({
+                product: item.product._id,
+                folder: item.folder,
+                added_at: item.added_at
+            }));
+            await user.save();
+        }
 
         let profile;
 
@@ -123,9 +142,11 @@ export const getMyProfile = async (req, res, next) => {
             success: true,
             data: {
                 profile,
-                cart: user.cart,
-                wishlist: user.wishlist,
-                addresses: user.addresses
+                cart: validCart,
+                wishlist: validWishlist,
+                addresses: user.addresses,
+                saved_cards: user.saved_cards || [],
+                saved_upis: user.saved_upis || []
             }
         });
     } catch (error) {
@@ -321,6 +342,97 @@ export const deleteAddress = async (req, res, next) => {
             success: true,
             message: 'Address removed',
             data: { addresses: user.addresses }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/profile/saved-card
+ * @desc    Save a card for future payments
+ * @access  Private
+ */
+export const saveCard = async (req, res, next) => {
+    try {
+        const { last4, brand, holder_name } = req.body;
+        const user = await User.findById(req.user.id);
+
+        // Check if card already saved
+        const exists = user.saved_cards.some(c => c.last4 === last4);
+        if (!exists) {
+            user.saved_cards.push({ last4, brand: brand || 'Visa', holder_name: holder_name || '' });
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: 'Card saved successfully',
+            data: { saved_cards: user.saved_cards }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/profile/saved-upi
+ * @desc    Save a UPI ID for future payments
+ * @access  Private
+ */
+export const saveUpi = async (req, res, next) => {
+    try {
+        const { upi_id, bank_name } = req.body;
+        const user = await User.findById(req.user.id);
+
+        // Check if UPI already saved
+        const exists = user.saved_upis.some(u => u.upi_id === upi_id);
+        if (!exists) {
+            user.saved_upis.push({ upi_id, bank_name: bank_name || 'UPI' });
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: 'UPI saved successfully',
+            data: { saved_upis: user.saved_upis }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/profile/wallet/add
+ * @desc    Add money to VibePay wallet
+ * @access  Private
+ */
+export const addMoney = async (req, res, next) => {
+    try {
+        const { amount } = req.body;
+        const addAmount = parseFloat(amount);
+
+        if (!addAmount || addAmount <= 0) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid amount' });
+        }
+        if (addAmount > 10000) {
+            return res.status(400).json({ success: false, message: 'Maximum add limit is $10,000' });
+        }
+
+        const user = await User.findById(req.user.id);
+        const newBalance = (user.vibepay_balance || 0) + addAmount;
+
+        if (newBalance > 10000) {
+            return res.status(400).json({ success: false, message: `Cannot exceed $10,000 wallet limit. Current balance: $${user.vibepay_balance.toFixed(2)}` });
+        }
+
+        user.vibepay_balance = newBalance;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: `$${addAmount.toFixed(2)} added to VibePay wallet`,
+            data: { vibepay_balance: user.vibepay_balance }
         });
     } catch (error) {
         next(error);
