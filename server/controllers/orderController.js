@@ -1,5 +1,6 @@
 import Order from '../models/Order.js';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 // Generate transaction ID: TXN + 8 random digits
 const generateTransactionId = () => {
@@ -12,6 +13,8 @@ const generateTransactionId = () => {
  * @access  Private
  */
 export const createOrder = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] CreateOrder request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
         const { items, total_amount, shipping_address, payment_method } = req.body;
@@ -70,6 +73,8 @@ export const createOrder = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] CreateOrder failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -80,6 +85,8 @@ export const createOrder = async (req, res, next) => {
  * @access  Private
  */
 export const getUserOrders = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetUserOrders request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
 
@@ -92,6 +99,8 @@ export const getUserOrders = async (req, res, next) => {
             data: orders
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetUserOrders failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -102,6 +111,8 @@ export const getUserOrders = async (req, res, next) => {
  * @access  Private
  */
 export const checkQrStatus = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] CheckQrStatus request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const order = await Order.findOne({ 
             order_id: req.params.orderId,
@@ -120,6 +131,8 @@ export const checkQrStatus = async (req, res, next) => {
             data: { qr_scanned: order.qr_scanned }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] CheckQrStatus failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -130,6 +143,8 @@ export const checkQrStatus = async (req, res, next) => {
  * @access  Public (no auth required)
  */
 export const handleQrScan = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] HandleQrScan request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const order = await Order.findOne({ order_id: req.params.orderId });
 
@@ -204,6 +219,8 @@ export const handleQrScan = async (req, res, next) => {
 </body>
 </html>`);
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] HandleQrScan failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };

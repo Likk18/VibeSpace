@@ -4,6 +4,7 @@ import UserStyleProfile from '../models/UserStyleProfile.js';
 import User from '../models/User.js';
 import Group from '../models/Group.js';
 import { calculateStyleProfile } from '../utils/scoring.js';
+import logger from '../utils/logger.js';
 
 /**
  * @route   GET /api/quiz/questions
@@ -11,6 +12,8 @@ import { calculateStyleProfile } from '../utils/scoring.js';
  * @access  Private
  */
 export const getQuestions = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetQuestions request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const questions = await QuizQuestion.find()
             .sort({ question_number: 1 })
@@ -22,6 +25,8 @@ export const getQuestions = async (req, res, next) => {
             data: { questions }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetQuestions failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -32,6 +37,8 @@ export const getQuestions = async (req, res, next) => {
  * @access  Private
  */
 export const submitQuiz = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] SubmitQuiz request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { responses } = req.body;
         const userId = req.user.id;
@@ -89,6 +96,8 @@ export const submitQuiz = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] SubmitQuiz failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -99,6 +108,8 @@ export const submitQuiz = async (req, res, next) => {
  * @access  Private
  */
 export const getQuizStatus = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetQuizStatus request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const user = await User.findById(req.user.id);
 
@@ -109,6 +120,8 @@ export const getQuizStatus = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetQuizStatus failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -119,6 +132,8 @@ export const getQuizStatus = async (req, res, next) => {
  * @access  Private
  */
 export const retakeQuiz = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] RetakeQuiz request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
 
@@ -134,6 +149,8 @@ export const retakeQuiz = async (req, res, next) => {
             message: 'Quiz reset successfully. You can now retake the quiz.'
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] RetakeQuiz failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };

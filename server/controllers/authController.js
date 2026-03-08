@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 /**
  * @route   POST /api/auth/register
@@ -8,6 +9,8 @@ import User from '../models/User.js';
  * @access  Public
  */
 export const register = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] Register request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { name, email, password, mode, group_id } = req.body;
 
@@ -55,6 +58,8 @@ export const register = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] Register failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -65,6 +70,8 @@ export const register = async (req, res, next) => {
  * @access  Public
  */
 export const login = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] Login request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { email, password } = req.body;
 
@@ -112,6 +119,8 @@ export const login = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] Login failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -122,6 +131,8 @@ export const login = async (req, res, next) => {
  * @access  Private
  */
 export const getMe = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetMe request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const user = await User.findById(req.user.id);
 
@@ -140,6 +151,8 @@ export const getMe = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetMe failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };

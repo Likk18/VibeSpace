@@ -2,7 +2,8 @@
  * Global error handling middleware
  */
 export const errorHandler = (err, req, res, next) => {
-    console.error('Error Stack:', err.stack);
+    const timestamp = new Date().toISOString();
+    console.error(`[${timestamp}] [ERROR] Error occurred | Method: ${req.method} | URL: ${req.originalUrl} | IP: ${req.ip || req.connection?.remoteAddress || 'unknown'} | User-Agent: ${req.get('user-agent') || 'unknown'} | Error: ${err.message} | Stack: ${err.stack}`);
 
     // Mongoose validation error
     if (err.name === 'ValidationError') {

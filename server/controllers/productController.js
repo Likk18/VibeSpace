@@ -3,6 +3,7 @@ import UserStyleProfile from '../models/UserStyleProfile.js';
 import GroupStyleProfile from '../models/GroupStyleProfile.js';
 import User from '../models/User.js';
 import { calculateMatchScore } from '../utils/recommendations.js';
+import logger from '../utils/logger.js';
 
 /**
  * @route   GET /api/products/feed
@@ -10,6 +11,8 @@ import { calculateMatchScore } from '../utils/recommendations.js';
  * @access  Private
  */
 export const getProductFeed = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetProductFeed request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
         const user = await User.findById(userId);
@@ -74,6 +77,8 @@ export const getProductFeed = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetProductFeed failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -84,6 +89,8 @@ export const getProductFeed = async (req, res, next) => {
  * @access  Public
  */
 export const getProduct = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetProduct request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const product = await Product.findById(req.params.id);
 
@@ -99,6 +106,8 @@ export const getProduct = async (req, res, next) => {
             data: { product }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetProduct failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -109,6 +118,8 @@ export const getProduct = async (req, res, next) => {
  * @access  Public
  */
 export const searchProducts = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] SearchProducts request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { q, category, minPrice, maxPrice, color, material } = req.query;
 
@@ -138,6 +149,8 @@ export const searchProducts = async (req, res, next) => {
             data: { products }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] SearchProducts failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -148,6 +161,8 @@ export const searchProducts = async (req, res, next) => {
  * @access  Public
  */
 export const getCategories = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetCategories request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const categories = await Product.distinct('category');
 
@@ -157,6 +172,8 @@ export const getCategories = async (req, res, next) => {
             data: { categories }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetCategories failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };

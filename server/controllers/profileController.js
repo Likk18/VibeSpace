@@ -3,6 +3,7 @@ import GroupStyleProfile from '../models/GroupStyleProfile.js';
 import Group from '../models/Group.js';
 import User from '../models/User.js';
 import { mergeGroupProfiles } from '../utils/merging.js';
+import logger from '../utils/logger.js';
 
 /**
  * @route   POST /api/profile/merge
@@ -10,6 +11,8 @@ import { mergeGroupProfiles } from '../utils/merging.js';
  * @access  Private
  */
 export const mergeProfiles = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] MergeProfiles request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
         const user = await User.findById(userId);
@@ -84,6 +87,8 @@ export const mergeProfiles = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] MergeProfiles failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -94,6 +99,8 @@ export const mergeProfiles = async (req, res, next) => {
  * @access  Private
  */
 export const getMyProfile = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetMyProfile request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
         const user = await User.findById(userId)
@@ -150,6 +157,8 @@ export const getMyProfile = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetMyProfile failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -160,6 +169,8 @@ export const getMyProfile = async (req, res, next) => {
  * @access  Private
  */
 export const togglePersonalization = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] TogglePersonalization request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { personalization_on } = req.body;
 
@@ -177,6 +188,8 @@ export const togglePersonalization = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] TogglePersonalization failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -187,6 +200,8 @@ export const togglePersonalization = async (req, res, next) => {
  * @access  Private
  */
 export const addToCart = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] AddToCart request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { productId } = req.body;
 
@@ -205,6 +220,8 @@ export const addToCart = async (req, res, next) => {
             data: { cart: user.cart }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] AddToCart failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -215,6 +232,8 @@ export const addToCart = async (req, res, next) => {
  * @access  Private
  */
 export const removeFromCart = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] RemoveFromCart request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { productId } = req.params;
 
@@ -234,6 +253,8 @@ export const removeFromCart = async (req, res, next) => {
             data: { cart: user.cart }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] RemoveFromCart failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -244,6 +265,8 @@ export const removeFromCart = async (req, res, next) => {
  * @access  Private
  */
 export const addToWishlist = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] AddToWishlist request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { productId, folder } = req.body;
 
@@ -271,6 +294,8 @@ export const addToWishlist = async (req, res, next) => {
             data: { wishlist: user.wishlist }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] AddToWishlist failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -281,6 +306,8 @@ export const addToWishlist = async (req, res, next) => {
  * @access  Private
  */
 export const removeFromWishlist = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] RemoveFromWishlist request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { productId } = req.params;
 
@@ -297,6 +324,8 @@ export const removeFromWishlist = async (req, res, next) => {
             data: { wishlist: user.wishlist }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] RemoveFromWishlist failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -307,6 +336,8 @@ export const removeFromWishlist = async (req, res, next) => {
  * @access  Private
  */
 export const addAddress = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] AddAddress request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const user = await User.findById(req.user.id);
         const newAddress = req.body;
@@ -324,6 +355,8 @@ export const addAddress = async (req, res, next) => {
             data: { addresses: user.addresses }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] AddAddress failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -334,6 +367,8 @@ export const addAddress = async (req, res, next) => {
  * @access  Private
  */
 export const deleteAddress = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] DeleteAddress request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const user = await User.findById(req.user.id);
         user.addresses = user.addresses.filter(addr => addr._id.toString() !== req.params.addressId);
@@ -344,6 +379,8 @@ export const deleteAddress = async (req, res, next) => {
             data: { addresses: user.addresses }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] DeleteAddress failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -354,6 +391,8 @@ export const deleteAddress = async (req, res, next) => {
  * @access  Private
  */
 export const saveCard = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] SaveCard request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { last4, brand, holder_name } = req.body;
         const user = await User.findById(req.user.id);
@@ -371,6 +410,8 @@ export const saveCard = async (req, res, next) => {
             data: { saved_cards: user.saved_cards }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] SaveCard failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -381,6 +422,8 @@ export const saveCard = async (req, res, next) => {
  * @access  Private
  */
 export const saveUpi = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] SaveUpi request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { upi_id, bank_name } = req.body;
         const user = await User.findById(req.user.id);
@@ -398,6 +441,8 @@ export const saveUpi = async (req, res, next) => {
             data: { saved_upis: user.saved_upis }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] SaveUpi failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -408,6 +453,8 @@ export const saveUpi = async (req, res, next) => {
  * @access  Private
  */
 export const addMoney = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] AddMoney request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { amount } = req.body;
         const addAmount = parseFloat(amount);
@@ -435,6 +482,8 @@ export const addMoney = async (req, res, next) => {
             data: { vibepay_balance: user.vibepay_balance }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] AddMoney failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };

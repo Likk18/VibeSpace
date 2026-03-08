@@ -3,6 +3,7 @@ import Product from '../models/Product.js';
 import UserStyleProfile from '../models/UserStyleProfile.js';
 import GroupStyleProfile from '../models/GroupStyleProfile.js';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 /**
  * @route   GET /api/moodboard/generate
@@ -10,6 +11,8 @@ import User from '../models/User.js';
  * @access  Private
  */
 export const generateMoodBoard = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GenerateMoodBoard request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const userId = req.user.id;
         const user = await User.findById(userId);
@@ -86,6 +89,8 @@ export const generateMoodBoard = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GenerateMoodBoard failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -96,6 +101,8 @@ export const generateMoodBoard = async (req, res, next) => {
  * @access  Private
  */
 export const regenerateMoodBoard = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] RegenerateMoodBoard request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { pool } = req.body;
 
@@ -122,6 +129,8 @@ export const regenerateMoodBoard = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] RegenerateMoodBoard failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };

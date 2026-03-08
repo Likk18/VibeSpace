@@ -4,9 +4,6 @@
     background-color: #000000;
     color: #f1f2f4;
     font-family: inherit;
-<<<<<<< HEAD
-    /* Keep VibeSpace fonts */
-=======
 }
 
 /* Demo Banner */
@@ -22,15 +19,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
->>>>>>> origin/main
 }
 
 .checkout-header {
     background-color: #000000;
-<<<<<<< HEAD
-    /* Dark header like Amazon but integrated */
-=======
->>>>>>> origin/main
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -55,11 +47,8 @@
     font-size: 1.25rem;
     font-weight: 500;
     color: #9ca3af;
-<<<<<<< HEAD
-=======
     display: flex;
     align-items: center;
->>>>>>> origin/main
 }
 
 .checkout-main {
@@ -107,10 +96,7 @@
 
 .section-number {
     color: #8400ff;
-<<<<<<< HEAD
     /* VibeSpace Purple */
-=======
->>>>>>> origin/main
 }
 
 .change-link {
@@ -160,7 +146,6 @@
     color: #8400ff;
 }
 
-<<<<<<< HEAD
 /* Payment Methods (Amazon Style) */
 .payment-box {
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -190,6 +175,8 @@
     margin-top: 2px;
     position: relative;
     cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
 }
 
 .radio-btn:checked {
@@ -208,8 +195,6 @@
     border-radius: 50%;
 }
 
-/* Sidebar Sidebar Summary */
-=======
 /* ========================================
    Payment Methods (Full Amazon-style)
    ======================================== */
@@ -481,7 +466,6 @@
 /* ========================================
    Sidebar Summary
    ======================================== */
->>>>>>> origin/main
 .sidebar-summary {
     position: sticky;
     top: 5rem;
@@ -501,10 +485,7 @@
     color: #000000;
     border: 1px solid #fcd200;
     border-radius: 50px;
-<<<<<<< HEAD
     /* Rounded pill like Amazon */
-=======
->>>>>>> origin/main
     padding: 0.6rem;
     font-weight: 600;
     font-size: 0.9rem;
@@ -516,14 +497,11 @@
     background-color: #f7ca00;
 }
 
-<<<<<<< HEAD
-=======
 .amazon-btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
->>>>>>> origin/main
 .amazon-btn-secondary {
     width: 100%;
     background: rgba(255, 255, 255, 0.05);
@@ -547,52 +525,27 @@
     justify-content: space-between;
     font-size: 1.25rem;
     font-weight: 700;
-<<<<<<< HEAD
-    color: #b12704;
-    /* Amazon-style red total, but readable on dark */
-=======
     color: #00d4ff;
->>>>>>> origin/main
     margin-top: 1rem;
     padding-top: 0.75rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-<<<<<<< HEAD
-/* Modal for Address */
-=======
 /* ========================================
    Modal (shared)
    ======================================== */
->>>>>>> origin/main
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-<<<<<<< HEAD
-    background: rgba(0, 0, 0, 0.8);
-=======
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
->>>>>>> origin/main
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 200;
-<<<<<<< HEAD
-}
-
-.modal-window {
-    background: #050505;
-    width: 100%;
-    max-width: 500px;
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-=======
-    padding: 1rem;
 }
 
 .modal-window {
@@ -603,20 +556,11 @@
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
->>>>>>> origin/main
 }
 
 .input-field {
     width: 100%;
     background: #0a0a0a;
-<<<<<<< HEAD
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 0.5rem;
-    color: white;
-    margin-top: 0.25rem;
-    margin-bottom: 1rem;
-=======
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     padding: 0.6rem 0.75rem;
@@ -630,36 +574,6 @@
 .input-field:focus {
     outline: none;
     border-color: #00d4ff;
-}
-
-/* Radio Button */
-.radio-btn {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    margin-top: 2px;
-    position: relative;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: border-color 0.2s;
-}
-
-.radio-btn:checked {
-    border-color: #00d3ff;
-}
-
-.radio-btn:checked::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
-    background: #00d3ff;
-    border-radius: 50%;
 }
 
 /* ========================================
@@ -724,5 +638,4 @@
     color: #d1d5db;
     line-height: 1.4;
     margin: 0;
->>>>>>> origin/main
 }

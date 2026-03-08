@@ -1,6 +1,7 @@
 import Group from '../models/Group.js';
 import User from '../models/User.js';
 import { DEFAULT_WEIGHTS } from '../config/constants.js';
+import logger from '../utils/logger.js';
 
 /**
  * @route   POST /api/groups/create
@@ -8,6 +9,8 @@ import { DEFAULT_WEIGHTS } from '../config/constants.js';
  * @access  Private
  */
 export const createGroup = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] CreateGroup request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { mode_label, member_count, weights } = req.body;
         const userId = req.user.id;
@@ -48,6 +51,8 @@ export const createGroup = async (req, res, next) => {
             data: { group }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] CreateGroup failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -58,6 +63,8 @@ export const createGroup = async (req, res, next) => {
  * @access  Private
  */
 export const joinGroup = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] JoinGroup request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -101,6 +108,8 @@ export const joinGroup = async (req, res, next) => {
             data: { group }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] JoinGroup failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
@@ -111,6 +120,8 @@ export const joinGroup = async (req, res, next) => {
  * @access  Private
  */
 export const getGroupStatus = async (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [INFO] GetGroupStatus request received | Method: ${req.method} | URL: ${req.originalUrl}`);
     try {
         const { id } = req.params;
 
@@ -139,6 +150,8 @@ export const getGroupStatus = async (req, res, next) => {
             }
         });
     } catch (error) {
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] [ERROR] GetGroupStatus failed | Error: ${error.message} | Stack: ${error.stack}`);
         next(error);
     }
 };
