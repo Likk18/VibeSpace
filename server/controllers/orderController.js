@@ -144,16 +144,22 @@ export const checkQrStatus = async (req, res, next) => {
  */
 export const handleQrScan = async (req, res, next) => {
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] [INFO] HandleQrScan request received | Method: ${req.method} | URL: ${req.originalUrl}`);
+    console.log(`[${timestamp}] [INFO] HandleQrScan request received | Method: ${req.method} | URL: ${req.originalUrl} | OrderId: ${req.params.orderId}`);
     try {
         const order = await Order.findOne({ order_id: req.params.orderId });
 
         if (!order) {
+            console.log(`[${timestamp}] [ERROR] HandleQrScan - Order not found: ${req.params.orderId}`);
             return res.status(404).send('<html><body style="background:#000;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><h1>Order not found</h1></body></html>');
         }
 
+        console.log(`[${timestamp}] [INFO] HandleQrScan - Order found: ${order.order_id}, current qr_scanned: ${order.qr_scanned}`);
+        
         order.qr_scanned = true;
+        order.payment_status = 'completed';
         await order.save();
+
+        console.log(`[${timestamp}] [INFO] HandleQrScan - Order updated: ${order.order_id}, qr_scanned: ${order.qr_scanned}, payment_status: ${order.payment_status}`);
 
         res.send(`<!DOCTYPE html>
 <html lang="en">

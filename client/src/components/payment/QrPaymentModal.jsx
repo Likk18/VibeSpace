@@ -6,9 +6,12 @@ const QrPaymentModal = ({ orderId, amount, onSuccess, onClose }) => {
     const canvasRef = useRef(null);
     const [status, setStatus] = useState('scanning'); // scanning | verifying | success
     const [timeLeft, setTimeLeft] = useState(5);
-    const pollRef = useRef(null);
+    const [pollError, setPollError] = useState(null);
 
     const qrUrl = `${window.location.origin}/api/orders/scan/${orderId}`;
+
+    console.log('[QR Modal] orderId:', orderId);
+    console.log('[QR Modal] qrUrl:', qrUrl);
 
     // Generate QR code
     useEffect(() => {
@@ -17,7 +20,7 @@ const QrPaymentModal = ({ orderId, amount, onSuccess, onClose }) => {
                 width: 220,
                 margin: 2,
                 color: { dark: '#ffffff', light: '#00000000' }
-            });
+            }).catch(err => console.error('[QR Modal] QR generation error:', err));
         }
     }, [qrUrl]);
 
@@ -25,41 +28,57 @@ const QrPaymentModal = ({ orderId, amount, onSuccess, onClose }) => {
     useEffect(() => {
         if (status !== 'scanning') return;
 
-        pollRef.current = setInterval(async () => {
+        console.log('[QR Modal] Starting poll for order:', orderId);
+
+        const pollInterval = setInterval(async () => {
             try {
+                console.log('[QR Modal] Polling checkQrStatus for:', orderId);
                 const res = await ordersAPI.checkQrStatus(orderId);
-                if (res.data.data.qr_scanned) {
+                console.log('[QR Modal] Poll response:', res.data);
+                
+                if (res.data?.data?.qr_scanned) {
+                    console.log('[QR Modal] QR scanned detected!');
                     setStatus('verifying');
-                    clearInterval(pollRef.current);
+                    clearInterval(pollInterval);
                 }
             } catch (err) {
-                console.error('QR poll error:', err);
+                console.error('[QR Modal] QR poll error:', err.response || err.message);
+                setPollError(err.response?.data?.message || err.message);
             }
         }, 2000);
 
-        return () => clearInterval(pollRef.current);
+        return () => clearInterval(pollInterval);
     }, [orderId, status]);
 
     // Countdown after QR scan detected
     useEffect(() => {
         if (status !== 'verifying') return;
 
+        console.log('[QR Modal] Verifying, timeLeft:', timeLeft);
+
         if (timeLeft > 0) {
             const timer = setTimeout(() => setTimeLeft(t => t - 1), 1000);
             return () => clearTimeout(timer);
         } else {
+            console.log('[QR Modal] Calling onSuccess');
             onSuccess();
         }
     }, [status, timeLeft, onSuccess]);
 
     const handleSimulateScan = async () => {
-        // Directly hit the scan endpoint via a fetch (simulates phone scan)
+        console.log('[QR Modal] Simulating scan for:', orderId);
         try {
-            await fetch(`${window.location.origin}/api/orders/scan/${orderId}`);
+            const response = await fetch(`${window.location.origin}/api/orders/scan/${orderId}`, {
+                method: 'GET',
+                mode: 'no-cors'
+            });
+            console.log('[QR Modal] Scan endpoint called, response:', response);
+            setStatus('verifying');
         } catch (e) {
-            // CORS might block, but the server will still process it
+            console.error('[QR Modal] Simulate scan error:', e);
+            // Still trigger verifying for testing
+            setStatus('verifying');
         }
-        setStatus('verifying');
     };
 
     return (
@@ -110,6 +129,30 @@ const QrPaymentModal = ({ orderId, amount, onSuccess, onClose }) => {
                             <div className="qr-pulse" />
                             Waiting for scan...
                         </div>
+
+                        {/* Error display */}
+                        {pollError && (
+                            <div style={{ color: '#ef4444', fontSize: '0.75rem', marginBottom: '1rem' }}>
+                                Error: {pollError}
+                            </div>
+                        )}
+
+                        {/* Test button - visible for debugging */}
+                        <button
+                            onClick={handleSimulateScan}
+                            style={{
+                                background: 'rgba(132,0,255,0.2)',
+                                border: '1px solid rgba(132,0,255,0.4)',
+                                color: '#c084fc',
+                                padding: '0.5rem 1rem',
+                                borderRadius: '8px',
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                                marginTop: '0.5rem'
+                            }}
+                        >
+                            [Test] Simulate QR Scan
+                        </button>
                     </>
                 )}
 

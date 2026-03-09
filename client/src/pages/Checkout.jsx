@@ -3,45 +3,57 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext';
 import { useAuth } from '../context/AuthContext';
 import { ordersAPI } from '../services/api';
+import PaymentMethodSelector, { getPaymentMethodSummary } from '../components/payment/PaymentMethodSelector';
+import OtpModal from '../components/payment/OtpModal';
+import QrPaymentModal from '../components/payment/QrPaymentModal';
+import NetBankingPage from '../components/payment/NetBankingPage';
+import PaymentProcessing from '../components/payment/PaymentProcessing';
+import PaymentSuccess from '../components/payment/PaymentSuccess';
 import './Checkout.css';
 
 const Checkout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { user } = useAuth();
-    const { cart, addresses, addAddress, fetchProfile } = useProfile();
+    const { user, updateUser } = useAuth();
+    const { cart, addresses, addAddress, fetchProfile, savedCards, savedUpis, saveCard, saveUpi } = useProfile();
 
-    // Check if we came from "Buy Now" (single product) or multiple items (from Cart/Wishlist)
+    // Check if we came from "Buy Now" (single product) or multiple items
     const passedProduct = location.state?.product;
     const passedItems = location.state?.items;
-    
-    // Determine checkout items
+
     let checkoutItems = [];
     if (passedProduct) {
         checkoutItems = [passedProduct];
     } else if (passedItems && passedItems.length > 0) {
         checkoutItems = passedItems;
     } else {
-        checkoutItems = cart || []; // Default to cart if nothing passed
+        checkoutItems = cart || [];
     }
 
-    // State
+    // Core State
     const [selectedAddressId, setSelectedAddressId] = useState(null);
     const [currentSection, setCurrentSection] = useState(1); // 1: Address, 2: Payment, 3: Review
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('upi');
+    const [paymentMethod, setPaymentMethod] = useState('saved_card');
     const [isProcessing, setIsProcessing] = useState(false);
-    
-    // Success Screen State
-    const [orderPlaced, setOrderPlaced] = useState(false);
-    const [countdown, setCountdown] = useState(5);
+
+    // Payment Flow State
+    const [paymentFlow, setPaymentFlow] = useState('idle'); // idle | processing | otp | qr | netbanking | waiting | success
+    const [orderResult, setOrderResult] = useState(null);
+
+    // Payment method specific data
+    const [newCardData, setNewCardData] = useState(null);
+    const [selectedBank, setSelectedBank] = useState('');
+    const [upiId, setUpiId] = useState('');
+    const [wantSaveCard, setWantSaveCard] = useState(false);
+    const [wantSaveUpi, setWantSaveUpi] = useState(false);
 
     // Form State for new address
     const [newAddress, setNewAddress] = useState({
         name: user?.name || '', street: '', area: '', city: '', state: '', pincode: '', tag: 'Home'
     });
 
-    // Group checkout items by ID to handle quantities natively
+    // Group checkout items by ID
     const groupedItemsMap = checkoutItems.reduce((acc, item) => {
         const prod = item.product || item;
         const id = prod._id || prod.id;
@@ -62,45 +74,20 @@ const Checkout = () => {
 
     const selectedAddress = addresses.find(a => a._id === selectedAddressId || a.id === selectedAddressId);
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
-    // Countdown Redirect Effect
-    useEffect(() => {
-        if (orderPlaced) {
-            if (countdown > 0) {
-                const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-                return () => clearTimeout(timer);
-            } else {
-                navigate('/orders');
-            }
-        }
-    }, [orderPlaced, countdown, navigate]);
+    useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handleAddAddress = async (e) => {
         e.preventDefault();
         try {
             setIsProcessing(true);
             const addressToAdd = { ...newAddress };
-            
-            // If it's the first Home address or user expressly set it
             if (addresses.length === 0 && addressToAdd.tag === 'Home') {
                 addressToAdd.is_default = true;
             }
-
             const apiResponse = await addAddress(addressToAdd);
-            
-            // Find the newly added address ID (the last one returned or by matching fields)
             const newlyAdded = apiResponse.data.addresses[apiResponse.data.addresses.length - 1];
-            if (newlyAdded) {
-                setSelectedAddressId(newlyAdded._id);
-            }
-            
-            if (addressToAdd.tag === 'Home' || newlyAdded) {
-                setCurrentSection(2); 
-            }
-
+            if (newlyAdded) setSelectedAddressId(newlyAdded._id);
+            if (addressToAdd.tag === 'Home' || newlyAdded) setCurrentSection(2);
             setIsAddressModalOpen(false);
             setNewAddress({ name: user?.name || '', street: '', area: '', city: '', state: '', pincode: '', tag: 'Home' });
         } catch (error) {
@@ -111,44 +98,235 @@ const Checkout = () => {
         }
     };
 
+    const createOrder = async () => {
+        const orderPayload = {
+            items: uniqueCheckoutItems.map(item => ({
+                product: item._id,
+                name: item.name,
+                price: item.price,
+                image_url: item.image_url,
+                quantity: item.checkoutQuantity
+            })),
+            total_amount: total,
+            shipping_address: selectedAddress,
+            payment_method: paymentMethod
+        };
+
+        const response = await ordersAPI.createOrder(orderPayload);
+        const orderData = response.data.data;
+
+        // Sync wallet balance in AuthContext
+        if (orderData.vibepay_balance !== undefined) {
+            updateUser({ vibepay_balance: orderData.vibepay_balance });
+        }
+
+        await fetchProfile();
+        return orderData;
+    };
+
     const handlePlaceOrder = async () => {
-        if (!selectedAddressId) {
-            alert('Please select a delivery address');
+        if (!selectedAddressId) { alert('Please select a delivery address'); return; }
+
+        // Validation
+        if (paymentMethod === 'vibepay_wallet' && (user?.vibepay_balance || 0) < total) {
+            alert('Insufficient wallet balance. Please add money first.');
             return;
         }
-        
-        setIsProcessing(true);
-        try {
-            const orderPayload = {
-                items: uniqueCheckoutItems.map(item => {
-                    return {
-                        product: item._id,
-                        name: item.name,
-                        price: item.price,
-                        image_url: item.image_url,
-                        quantity: item.checkoutQuantity
-                    };
-                }),
-                total_amount: total,
-                shipping_address: selectedAddress,
-                payment_method: paymentMethod
-            };
+        if (paymentMethod === 'net_banking' && !selectedBank) {
+            alert('Please select a bank.');
+            return;
+        }
+        if (paymentMethod === 'other_upi' && !upiId.includes('@')) {
+            alert('Please enter a valid UPI ID (e.g. user@upi)');
+            return;
+        }
 
-            await ordersAPI.createOrder(orderPayload);
-            
-            // Re-fetch profile to sync the cleared cart/wishlist from the database
-            await fetchProfile();
-            
-            setOrderPlaced(true);
+        setIsProcessing(true);
+
+        try {
+            // Determine flow based on payment method
+            switch (paymentMethod) {
+                case 'saved_card':
+                case 'new_card':
+                    setPaymentFlow('otp');
+                    break;
+
+                case 'saved_upi':
+                case 'other_upi': {
+                    setPaymentFlow('waiting');
+                    const delay = 4000 + Math.random() * 2000;
+                    setTimeout(async () => {
+                        try {
+                            const order = await createOrder();
+
+                            // Save UPI if user opted in
+                            if (wantSaveUpi && upiId && paymentMethod === 'other_upi') {
+                                try {
+                                    await saveUpi({ upi_id: upiId, bank_name: 'UPI' });
+                                } catch (e) { console.error('UPI save failed', e); }
+                            }
+
+                            setOrderResult({
+                                ...order,
+                                payment_method: paymentMethod,
+                                upiId: upiId
+                            });
+                            setPaymentFlow('success');
+                        } catch (err) {
+                            console.error('Order failed:', err);
+                            alert('Payment failed. Please try again.');
+                            setPaymentFlow('idle');
+                        }
+                        setIsProcessing(false);
+                    }, delay);
+                    return;
+                }
+
+                case 'net_banking':
+                    setPaymentFlow('netbanking');
+                    break;
+
+                case 'qr_upi': {
+                    // Create order first, then show QR
+                    try {
+                        const order = await createOrder();
+                        setOrderResult({
+                            ...order,
+                            payment_method: paymentMethod
+                        });
+                        setPaymentFlow('qr');
+                    } catch (err) {
+                        console.error('Order failed:', err);
+                        alert('Failed to create order. Please try again.');
+                        setPaymentFlow('idle');
+                    }
+                    setIsProcessing(false);
+                    return;
+                }
+
+                case 'vibepay_wallet':
+                case 'cod': {
+                    // Immediate order creation
+                    try {
+                        const order = await createOrder();
+                        setOrderResult({
+                            ...order,
+                            payment_method: paymentMethod
+                        });
+                        setPaymentFlow('success');
+                    } catch (err) {
+                        console.error('Order failed:', err);
+                        alert(err.response?.data?.message || 'Payment failed. Please try again.');
+                        setPaymentFlow('idle');
+                    }
+                    break;
+                }
+
+                default:
+                    break;
+            }
         } catch (error) {
-            console.error('Failed to place order:', error);
-            alert('Could not place order. Please try again later.');
-        } finally {
-            setIsProcessing(false);
+            console.error('Payment error:', error);
+            alert('Something went wrong. Please try again.');
+            setPaymentFlow('idle');
+        }
+
+        setIsProcessing(false);
+    };
+
+    // OTP success handler
+    const handleOtpSuccess = async () => {
+        setPaymentFlow('processing');
+        try {
+            const order = await createOrder();
+
+            // Save card if user opted in
+            if (wantSaveCard && newCardData && paymentMethod === 'new_card') {
+                const rawNum = newCardData.number.replace(/\s/g, '');
+                try {
+                    await saveCard({
+                        last4: rawNum.slice(-4),
+                        brand: rawNum.startsWith('4') ? 'Visa' : rawNum.startsWith('5') ? 'Mastercard' : 'Card',
+                        holder_name: newCardData.name || ''
+                    });
+                } catch (e) { console.error('Card save failed', e); }
+            }
+
+            setOrderResult({
+                ...order,
+                payment_method: paymentMethod
+            });
+            setTimeout(() => setPaymentFlow('success'), 1500);
+        } catch (err) {
+            console.error('Order failed:', err);
+            alert('Payment failed. Please try again.');
+            setPaymentFlow('idle');
         }
     };
 
-    if (checkoutItems.length === 0 && !isProcessing) {
+    // Net Banking success handler
+    const handleNetBankingSuccess = async () => {
+        try {
+            const order = await createOrder();
+            setOrderResult({
+                ...order,
+                payment_method: paymentMethod,
+                bankName: selectedBank
+            });
+            setPaymentFlow('success');
+        } catch (err) {
+            console.error('Order failed:', err);
+            alert('Payment failed. Please try again.');
+            setPaymentFlow('idle');
+        }
+    };
+
+    // QR success handler
+    const handleQrSuccess = () => {
+        setPaymentFlow('success');
+    };
+
+    // Close modal handler
+    const handleCloseModal = () => {
+        setPaymentFlow('idle');
+        setIsProcessing(false);
+    };
+
+    // Render modals based on payment flow state
+    const renderPaymentModals = () => {
+        switch (paymentFlow) {
+            case 'otp':
+                return <OtpModal onSuccess={handleOtpSuccess} onClose={handleCloseModal} />;
+            case 'qr':
+                return (
+                    <QrPaymentModal
+                        orderId={orderResult?.order_id}
+                        amount={total}
+                        onSuccess={handleQrSuccess}
+                        onClose={handleCloseModal}
+                    />
+                );
+            case 'netbanking':
+                return (
+                    <NetBankingPage
+                        bankName={selectedBank}
+                        amount={total}
+                        onSuccess={handleNetBankingSuccess}
+                        onClose={handleCloseModal}
+                    />
+                );
+            case 'waiting':
+            case 'processing':
+                return <PaymentProcessing method={paymentMethod} amount={total} />;
+            case 'success':
+                return <PaymentSuccess orderData={orderResult} />;
+            default:
+                return null;
+        }
+    };
+
+    // Empty cart
+    if (checkoutItems.length === 0 && !isProcessing && paymentFlow === 'idle') {
         return (
             <div className="min-h-screen bg-[#020008] flex flex-col items-center justify-center p-4 text-center text-white">
                 <h2 className="text-3xl font-display font-bold mb-6">Your checkout is empty</h2>
@@ -157,28 +335,9 @@ const Checkout = () => {
         );
     }
 
-    if (orderPlaced) {
-        return (
-            <div className="min-h-screen bg-[#020008] flex flex-col items-center justify-center p-4 text-center text-white">
-                <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-in fade-in zoom-in duration-500">
-                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <h2 className="text-4xl font-display font-bold mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150 fill-mode-both">Order Placed Successfully!</h2>
-                <p className="text-xl text-gray-400 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both">Your items will be on their way soon.</p>
-                <div className="flex flex-col items-center gap-4 animate-in fade-in duration-500 delay-500 fill-mode-both">
-                    <div className="w-16 h-16 relative flex items-center justify-center">
-                        <svg className="animate-spin h-16 w-16 text-[#00d4ff] opacity-20 absolute" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="font-bold text-2xl z-10 text-[#00d4ff]">{countdown}</span>
-                    </div>
-                    <p className="text-sm text-gray-500 font-medium tracking-wide mt-2 uppercase">Redirecting to your orders...</p>
-                </div>
-            </div>
-        );
+    // Success screen
+    if (paymentFlow === 'success') {
+        return <PaymentSuccess orderData={orderResult} />;
     }
 
     return (
@@ -186,14 +345,18 @@ const Checkout = () => {
             {/* Header */}
             <header className="checkout-header">
                 <div className="w-32"></div>
-                <div className="secure-tag">Secure Checkout</div>
+                <div className="secure-tag">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '6px', verticalAlign: 'middle' }}>
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Secure Checkout
+                </div>
                 <div className="hidden md:block w-32"></div>
             </header>
 
             <main className="checkout-main">
                 {/* Left Side: Steps */}
                 <div className="checkout-steps">
-
                     {/* Section 1: Address */}
                     <div className="checkout-section">
                         {currentSection !== 1 && selectedAddress ? (
@@ -214,7 +377,6 @@ const Checkout = () => {
                                 <h3 className="section-title mb-4">
                                     <span className="section-number">1</span> Select Address
                                 </h3>
-
                                 {addresses && addresses.length > 0 ? (
                                     <div className="space-y-3 mb-4">
                                         {addresses.map(addr => {
@@ -246,7 +408,6 @@ const Checkout = () => {
                                         <p className="text-gray-400 mb-4">No addresses saved yet.</p>
                                     </div>
                                 )}
-
                                 <button
                                     className="text-[#00d4ff] text-sm font-bold flex items-center gap-1 mt-2"
                                     onClick={() => setIsAddressModalOpen(true)}
@@ -259,50 +420,40 @@ const Checkout = () => {
 
                     {/* Section 2: Payment */}
                     <div className="checkout-section">
-                        {currentSection !== 2 && currentSection > 2 ? (
-                            <div className="section-collapsed">
-                                <div className="section-title">
-                                    <span className="section-number">2</span>
-                                    <span>Payment method ({paymentMethod.toUpperCase()})</span>
-                                </div>
-                                <button className="change-link" onClick={() => setCurrentSection(2)}>Change</button>
-                            </div>
-                        ) : (
-                            <div className={`section-expanded ${currentSection < 2 ? 'opacity-40 pointer-events-none' : ''}`}>
-                                <h3 className="section-title mb-4">
-                                    <span className="section-number">2</span> Payment method
-                                </h3>
-
-                                <div className="payment-box">
-                                    {[
-                                        { id: 'upi', label: 'VibePay UPI', sub: 'Linked Bank Account ..5771' },
-                                        { id: 'card', label: 'Credit or debit card', sub: 'All major cards accepted' },
-                                        { id: 'cod', label: 'Cash on Delivery', sub: 'Pay at your doorstep' }
-                                    ].map(opt => (
-                                        <label key={opt.id} className="payment-option">
-                                            <input
-                                                type="radio"
-                                                className="radio-btn"
-                                                name="payment"
-                                                checked={paymentMethod === opt.id}
-                                                onChange={() => setPaymentMethod(opt.id)}
-                                            />
-                                            <div>
-                                                <div className="font-bold">{opt.label}</div>
-                                                <div className="text-xs text-gray-400">{opt.sub}</div>
-                                            </div>
-                                        </label>
-                                    ))}
-                                </div>
-
+                        <div className={`section-expanded ${currentSection < 2 ? 'opacity-40 pointer-events-none' : ''}`}>
+                            <h3 className="section-title mb-4">
+                                <span className="section-number">2</span> Payment method
+                                {currentSection > 2 && (
+                                    <span style={{ marginLeft: '0.75rem', fontSize: '0.8rem', fontWeight: 400, color: '#22c55e' }}>
+                                        ✓ {getPaymentMethodSummary(paymentMethod, { walletBalance: user?.vibepay_balance, bankName: selectedBank, upiId, cardLast4: newCardData?.number?.replace(/\s/g, '').slice(-4) }).title}
+                                    </span>
+                                )}
+                            </h3>
+                            <PaymentMethodSelector
+                                selectedMethod={paymentMethod}
+                                onMethodChange={setPaymentMethod}
+                                walletBalance={user?.vibepay_balance || 0}
+                                orderAmount={total}
+                                onNewCardData={setNewCardData}
+                                onBankSelect={setSelectedBank}
+                                onUpiIdChange={setUpiId}
+                                savedCards={savedCards}
+                                savedUpis={savedUpis}
+                                onSaveCardToggle={setWantSaveCard}
+                                onSaveUpiToggle={setWantSaveUpi}
+                            />
+                            {currentSection === 2 && (
                                 <button
                                     className="amazon-btn-primary mt-6 max-w-xs"
                                     onClick={() => setCurrentSection(3)}
+                                    disabled={
+                                        (paymentMethod === 'vibepay_wallet' && (user?.vibepay_balance || 0) < total)
+                                    }
                                 >
                                     Use this payment method
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
 
                     {/* Section 3: Review */}
@@ -312,21 +463,19 @@ const Checkout = () => {
                                 <span className="section-number">3</span> Review items and shipping
                             </h3>
                             <div className="space-y-4">
-                                {uniqueCheckoutItems.map((item, idx) => {
-                                    return (
-                                        <div key={idx} className="flex gap-4 p-4 border border-white/5 rounded-lg">
-                                            <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
-                                            <div>
-                                                <h4 className="font-bold text-sm">{item.name}</h4>
-                                                <div className="flex items-center gap-4 mt-1">
-                                                    <p className="text-[#00d4ff] font-bold">${(item.price || 0).toFixed(2)}</p>
-                                                    <span className="text-xs text-gray-400 bg-white/10 px-2 py-0.5 rounded">Qty: {item.checkoutQuantity}</span>
-                                                </div>
-                                                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Authenticated by VibeSpace</p>
+                                {uniqueCheckoutItems.map((item, idx) => (
+                                    <div key={idx} className="flex gap-4 p-4 border border-white/5 rounded-lg">
+                                        <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
+                                        <div>
+                                            <h4 className="font-bold text-sm">{item.name}</h4>
+                                            <div className="flex items-center gap-4 mt-1">
+                                                <p className="text-[#00d4ff] font-bold">${(item.price || 0).toFixed(2)}</p>
+                                                <span className="text-xs text-gray-400 bg-white/10 px-2 py-0.5 rounded">Qty: {item.checkoutQuantity}</span>
                                             </div>
+                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Authenticated by VibeSpace</p>
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -340,7 +489,7 @@ const Checkout = () => {
                             disabled={currentSection < 3 || isProcessing}
                             onClick={handlePlaceOrder}
                         >
-                            {isProcessing ? 'PLACING ORDER...' : 'Place your order'}
+                            {isProcessing ? 'PROCESSING...' : 'Place your order'}
                         </button>
 
                         <p className="text-[10px] text-gray-500 text-center mb-4 leading-tight">
@@ -356,7 +505,7 @@ const Checkout = () => {
                             </div>
                             <div className="summary-row">
                                 <span>Delivery:</span>
-                                <span>${delivery.toFixed(2)}</span>
+                                <span>{delivery === 0 ? <span style={{ color: '#22c55e' }}>Free</span> : `$${delivery.toFixed(2)}`}</span>
                             </div>
                             <div className="summary-total">
                                 <span>Order Total:</span>
@@ -378,53 +527,25 @@ const Checkout = () => {
                         <h3 className="text-xl font-bold mb-4">Enter a new delivery address</h3>
                         <form onSubmit={handleAddAddress}>
                             <label className="text-xs font-bold text-gray-400">Full Name</label>
-                            <input
-                                className="input-field"
-                                value={newAddress.name}
-                                onChange={e => setNewAddress({ ...newAddress, name: e.target.value })}
-                                required
-                            />
-
+                            <input className="input-field" value={newAddress.name} onChange={e => setNewAddress({ ...newAddress, name: e.target.value })} required />
                             <label className="text-xs font-bold text-gray-400">Street Address</label>
-                            <input
-                                className="input-field"
-                                value={newAddress.street}
-                                onChange={e => setNewAddress({ ...newAddress, street: e.target.value })}
-                                required
-                            />
-
+                            <input className="input-field" value={newAddress.street} onChange={e => setNewAddress({ ...newAddress, street: e.target.value })} required />
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-xs font-bold text-gray-400">City</label>
-                                    <input
-                                        className="input-field"
-                                        value={newAddress.city}
-                                        onChange={e => setNewAddress({ ...newAddress, city: e.target.value })}
-                                        required
-                                    />
+                                    <input className="input-field" value={newAddress.city} onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} required />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-gray-400">Pincode</label>
-                                    <input
-                                        className="input-field"
-                                        value={newAddress.pincode}
-                                        onChange={e => setNewAddress({ ...newAddress, pincode: e.target.value })}
-                                        required
-                                    />
+                                    <input className="input-field" value={newAddress.pincode} onChange={e => setNewAddress({ ...newAddress, pincode: e.target.value })} required />
                                 </div>
                             </div>
-
                             <label className="text-xs font-bold text-gray-400">Address Category</label>
-                            <select
-                                className="input-field"
-                                value={newAddress.tag}
-                                onChange={e => setNewAddress({ ...newAddress, tag: e.target.value })}
-                            >
+                            <select className="input-field" value={newAddress.tag} onChange={e => setNewAddress({ ...newAddress, tag: e.target.value })}>
                                 <option value="Home">Home</option>
                                 <option value="Work">Work</option>
                                 <option value="Other">Other</option>
                             </select>
-
                             <div className="flex gap-3 mt-4">
                                 <button type="submit" className="amazon-btn-primary">Add Address</button>
                                 <button type="button" onClick={() => setIsAddressModalOpen(false)} className="amazon-btn-secondary">Cancel</button>
@@ -433,6 +554,9 @@ const Checkout = () => {
                     </div>
                 </div>
             )}
+
+            {/* Payment Flow Modals */}
+            {renderPaymentModals()}
         </div>
     );
 };

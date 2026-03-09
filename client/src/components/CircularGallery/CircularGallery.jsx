@@ -1,94 +1,177 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import './CircularGallery.css';
 
-const CircularGallery = ({ items = [], bend = 1, textColor = '#ffffff', borderRadius = 0.05, scrollSpeed = 2, scrollEase = 0.05 }) => {
-    const containerRef = useRef(null);
-    const trackRef = useRef(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const posRef = useRef({ current: 0, target: 0, startX: 0, startScroll: 0 });
+const DRAG_BUFFER = 0;
+const VELOCITY_THRESHOLD = 500;
+const GAP = 16;
+const SPRING_OPTIONS = { type: 'spring', stiffness: 300, damping: 30 };
 
-    // Auto-scroll
-    useEffect(() => {
-        let raf;
-        let autoDir = -1;
+function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, transition }) {
+  const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
+  const outputRange = [90, 0, -90];
+  const rotateY = useTransform(x, range, outputRange, { clamp: false });
 
-        const animate = () => {
-            const pos = posRef.current;
-            if (!isDragging) {
-                pos.target += autoDir * 0.5 * scrollSpeed;
-            }
-            pos.current += (pos.target - pos.current) * scrollEase;
+  return (
+    <motion.div
+      key={`${item?.id ?? index}-${index}`}
+      className={`carousel-item ${round ? 'round' : ''}`}
+      style={{
+        width: itemWidth,
+        height: round ? itemWidth : '100%',
+        rotateY: rotateY,
+        ...(round && { borderRadius: '50%' })
+      }}
+      transition={transition}
+    >
+      <div className={`carousel-item-header ${round ? 'round' : ''}`}>
+        {item.image && (
+          <img 
+            src={item.image} 
+            alt={item.title || ''} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: round ? '50%' : '8px' }} 
+            draggable={false}
+          />
+        )}
+      </div>
+      <div className="carousel-item-content">
+        <div className="carousel-item-title">{item.title}</div>
+      </div>
+    </motion.div>
+  );
+}
 
-            if (trackRef.current) {
-                // wrap around
-                const trackWidth = trackRef.current.scrollWidth / 2;
-                if (Math.abs(pos.current) > trackWidth) {
-                    pos.current %= trackWidth;
-                    pos.target %= trackWidth;
-                }
-                trackRef.current.style.transform = `translateX(${pos.current}px)`;
-            }
-            raf = requestAnimationFrame(animate);
-        };
-        raf = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(raf);
-    }, [isDragging, scrollSpeed, scrollEase]);
+export default function CircularGallery({
+  items = [],
+  baseWidth = 500,
+  bend = 1,
+  textColor = '#ffffff',
+  borderRadius = 0.05,
+  scrollSpeed = 2,
+  scrollEase = 0.05
+}) {
+  const containerPadding = 16;
+  const itemWidth = baseWidth - containerPadding * 2;
+  const trackItemOffset = itemWidth + GAP;
+  
+  const itemsForRender = useMemo(() => {
+    if (items.length === 0) return [];
+    return [...items, ...items];
+  }, [items]);
 
-    const handlePointerDown = useCallback((e) => {
-        setIsDragging(true);
-        posRef.current.startX = e.clientX;
-        posRef.current.startScroll = posRef.current.target;
-    }, []);
+  const [position, setPosition] = useState(0);
+  const x = useMotionValue(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-    const handlePointerMove = useCallback((e) => {
-        if (!isDragging) return;
-        const diff = (e.clientX - posRef.current.startX) * 1.5;
-        posRef.current.target = posRef.current.startScroll + diff;
-    }, [isDragging]);
+  const containerRef = useRef(null);
 
-    const handlePointerUp = useCallback(() => setIsDragging(false), []);
+  useEffect(() => {
+    if (itemsForRender.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setPosition(prev => {
+        const next = prev + 1;
+        if (next >= itemsForRender.length) {
+          return 0;
+        }
+        return next;
+      });
+    }, 4000);
 
-    // Double the items for infinite looping
-    const doubled = [...items, ...items];
+    return () => clearInterval(interval);
+  }, [itemsForRender.length]);
 
-    const sizes = [180, 140, 200, 160, 150, 190, 170]; // varied sizes
+  useEffect(() => {
+    x.set(-position * trackItemOffset);
+  }, [position, trackItemOffset, x]);
 
+  const effectiveTransition = SPRING_OPTIONS;
+
+  const handleDragEnd = (_, info) => {
+    const { offset, velocity } = info;
+    const direction =
+      offset.x < -DRAG_BUFFER || velocity.x < -VELOCITY_THRESHOLD
+        ? 1
+        : offset.x > DRAG_BUFFER || velocity.x > VELOCITY_THRESHOLD
+          ? -1
+          : 0;
+
+    if (direction === 0) return;
+
+    setPosition(prev => {
+      const next = prev + direction;
+      const max = itemsForRender.length - 1;
+      return Math.max(0, Math.min(next, max));
+    });
+  };
+
+  const activeIndex = items.length === 0 ? 0 : position % items.length;
+
+  if (items.length === 0) {
     return (
-        <div
-            ref={containerRef}
-            className="circular-gallery"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-        >
-            <div ref={trackRef} className="circular-gallery-track" style={{ alignItems: 'center', gap: '20px', paddingLeft: '20px' }}>
-                {doubled.map((item, i) => {
-                    const size = sizes[i % sizes.length];
-                    const yOffset = Math.sin((i * Math.PI) / 3.5) * 40 * bend;
-                    return (
-                        <div
-                            key={i}
-                            className="circular-gallery-item"
-                            style={{
-                                width: size,
-                                height: size,
-                                borderRadius: `${borderRadius * 100}%`,
-                                transform: `translateY(${yOffset}px)`,
-                            }}
-                        >
-                            <img src={item.image} alt={item.title || ''} draggable={false} />
-                            {item.title && (
-                                <div className="label" style={{ color: textColor }}>
-                                    {item.title}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+      <div className="carousel-container" style={{ width: `${baseWidth}px`, height: '400px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8B6914' }}>
+          Loading...
         </div>
+      </div>
     );
-};
+  }
 
-export default CircularGallery;
+  return (
+    <div
+      ref={containerRef}
+      className="carousel-container"
+      style={{
+        width: `${baseWidth}px`,
+        height: '450px',
+        backgroundColor: '#2A1810'
+      }}
+    >
+      <motion.div
+        className="carousel-track"
+        drag="x"
+        dragConstraints={{ left: -trackItemOffset * (itemsForRender.length - 1), right: 0 }}
+        style={{
+          width: itemWidth,
+          gap: `${GAP}px`,
+          perspective: 1000,
+          perspectiveOrigin: `${position * trackItemOffset + itemWidth / 2}px 50%`,
+          x
+        }}
+        onDragEnd={handleDragEnd}
+        animate={{ x: -(position * trackItemOffset) }}
+        transition={effectiveTransition}
+        onAnimationStart={() => setIsAnimating(true)}
+        onAnimationComplete={() => setIsAnimating(false)}
+      >
+        {itemsForRender.map((item, index) => (
+          <CarouselItem
+            key={`${item?.id ?? index}-${index}`}
+            item={item}
+            index={index}
+            itemWidth={itemWidth}
+            round={false}
+            trackItemOffset={trackItemOffset}
+            x={x}
+            transition={effectiveTransition}
+          />
+        ))}
+      </motion.div>
+      <div className="carousel-indicators-container">
+        <div className="carousel-indicators">
+          {items.map((_, index) => (
+            <motion.div
+              key={index}
+              className={`carousel-indicator ${activeIndex === index ? 'active' : 'inactive'}`}
+              animate={{
+                scale: activeIndex === index ? 1.2 : 1
+              }}
+              onClick={() => setPosition(index)}
+              transition={{ duration: 0.15 }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
