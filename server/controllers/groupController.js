@@ -84,6 +84,13 @@ export const joinByCode = async (req, res, next) => {
         const { invite_code } = req.body;
         const userId = req.user?.id;
 
+        if (!invite_code || typeof invite_code !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or missing invite code'
+            });
+        }
+
         const group = await Group.findOne({ invite_code: invite_code.toUpperCase() });
 
         if (!group) {
