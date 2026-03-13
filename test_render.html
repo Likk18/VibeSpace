@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Render</title>
+    <style>
+        body { padding: 50px; background: #eee; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: white; /* Fallback */
+            background-size: cover;
+            background-position: center;
+        }
+        .main-img {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 80%;
+            max-width: 80%;
+            object-fit: contain;
+            mix-blend-multiply: multiply;
+            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.3));
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <div class="container" style="background-image: url('https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/be472cadba550f362e6a59cac14c1220.jpg')">
+            <img src="https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/IKEA-RMBG/10439458.png" class="main-img" />
+        </div>
+    </div>
+</body>
+</html>
