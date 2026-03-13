@@ -10,6 +10,15 @@ const Orders = () => {
     const [activeTab, setActiveTab] = useState('orders');
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [actionModal, setActionModal] = useState({ isOpen: false, type: null, orderId: null });
+
+    const handleActionClick = (type, orderId) => {
+        setActionModal({ isOpen: true, type, orderId });
+    };
+
+    const closeActionModal = () => {
+        setActionModal({ isOpen: false, type: null, orderId: null });
+    };
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -31,6 +40,86 @@ const Orders = () => {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    const renderActionModal = () => {
+        if (!actionModal.isOpen) return null;
+
+        const content = {
+            track: {
+                title: 'Track Package',
+                message: 'Your package is currently in transit.',
+                details: 'Expected delivery by tomorrow. Carrier: SpeedyShip Logistics.',
+                action: 'View Detailed Tracking'
+            },
+            return: {
+                title: 'Return or Replace Items',
+                message: 'Select items to return or replace.',
+                details: 'Items are eligible for return within 30 days of delivery.',
+                action: 'Start Return Process'
+            },
+            share: {
+                title: 'Share Gift Receipt',
+                message: 'A gift receipt link has been generated.',
+                details: 'Link copied to clipboard! You can now share it with the recipient.',
+                action: 'Copy Link Again'
+            },
+            ask: {
+                title: 'Ask Product Question',
+                message: 'What would you like to know about this product?',
+                details: 'Sellers typically respond within 24 hours.',
+                action: 'Submit Question'
+            },
+            feedback_seller: {
+                title: 'Leave Seller Feedback',
+                message: 'How was your experience with this seller?',
+                details: 'Your rating helps other buyers make informed decisions.',
+                action: 'Rate Seller'
+            },
+            feedback_delivery: {
+                title: 'Leave Delivery Feedback',
+                message: 'How was the delivery experience?',
+                details: 'Let us know if the package arrived safely and on time.',
+                action: 'Submit Delivery Feedback'
+            },
+            review: {
+                title: 'Write a Product Review',
+                message: 'Share your thoughts with other customers.',
+                details: 'Upload photos or videos to help others see the product in action.',
+                action: 'Start Writing Review'
+            }
+        }[actionModal.type];
+
+        if (!content) return null;
+
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl">
+                    <button 
+                        onClick={closeActionModal}
+                        className="absolute right-4 top-4 text-gray-400 hover:text-white transition-colors"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold font-display mb-4">{content.title}</h2>
+                        <div className="bg-background rounded-xl p-4 mb-6 border border-white/5">
+                            <p className="font-medium text-white mb-2">{content.message}</p>
+                            <p className="text-sm text-gray-400">{content.details}</p>
+                        </div>
+                        <button 
+                            className="w-full btn-primary py-3"
+                            onClick={() => {
+                                alert(`Simulating action: ${content.action}`);
+                                closeActionModal();
+                            }}
+                        >
+                            {content.action}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -150,13 +239,13 @@ const Orders = () => {
                                     </div>
 
                                     <div className="order-actions">
-                                        <button className="amazon-btn-white">Track package</button>
-                                        <button className="amazon-btn-white">Return or replace items</button>
-                                        <button className="amazon-btn-white">Share gift receipt</button>
-                                        <button className="amazon-btn-white">Ask Product Question</button>
-                                        <button className="amazon-btn-white">Leave seller feedback</button>
-                                        <button className="amazon-btn-white">Leave delivery feedback</button>
-                                        <button className="amazon-btn-white">Write a product review</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('track', order._id)}>Track package</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('return', order._id)}>Return or replace items</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('share', order._id)}>Share gift receipt</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('ask', order._id)}>Ask Product Question</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('feedback_seller', order._id)}>Leave seller feedback</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('feedback_delivery', order._id)}>Leave delivery feedback</button>
+                                        <button className="amazon-btn-white" onClick={() => handleActionClick('review', order._id)}>Write a product review</button>
                                     </div>
                                 </div>
                             </div>
@@ -164,6 +253,7 @@ const Orders = () => {
                     )))}
                 </div>
             </div>
+            {renderActionModal()}
         </div>
     );
 };
