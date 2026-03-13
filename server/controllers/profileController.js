@@ -134,17 +134,10 @@ export const getMyProfile = async (req, res, next) => {
             profile = await UserStyleProfile.findOne({ user_id: userId });
         }
 
-        if (!profile && !groupProfile) {
-            return res.status(404).json({
-                success: false,
-                message: 'Profile not found. Please complete the quiz first.'
-            });
-        }
-
         res.json({
             success: true,
             data: {
-                profile: profile || groupProfile,
+                profile: profile || groupProfile || null,
                 group_profile: groupProfile,
                 cart: validCart,
                 wishlist: validWishlist,

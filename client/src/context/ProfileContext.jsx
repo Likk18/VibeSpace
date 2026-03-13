@@ -24,10 +24,10 @@ export const ProfileProvider = ({ children }) => {
     const [feedMode, setFeedMode] = useState('personal');
 
     useEffect(() => {
-        if (user?.quiz_complete) {
+        if (user) {
             fetchProfile();
         }
-    }, [user?.quiz_complete]);
+    }, [user?._id, user?.quiz_complete]);
 
     useEffect(() => {
         if (user?.mode === 'group' && user?.group_id) {

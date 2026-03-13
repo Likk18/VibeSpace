@@ -7,27 +7,27 @@ const router = express.Router();
 // All profile routes require authentication
 router.use(protect);
 
-router.get('/me', requireQuizComplete, getMyProfile);
+router.get('/me', getMyProfile);
 router.get('/group-report', requireQuizComplete, getGroupReport);
 router.post('/merge', requireQuizComplete, mergeProfiles);
 router.put('/toggle', togglePersonalization);
 
 // Cart Routes
-router.post('/cart', requireQuizComplete, addToCart);
-router.delete('/cart/:productId', requireQuizComplete, removeFromCart);
+router.post('/cart', addToCart);
+router.delete('/cart/:productId', removeFromCart);
 
 // Wishlist Routes
-router.post('/wishlist', requireQuizComplete, addToWishlist);
-router.delete('/wishlist/:productId', requireQuizComplete, removeFromWishlist);
+router.post('/wishlist', addToWishlist);
+router.delete('/wishlist/:productId', removeFromWishlist);
 // Address Routes
-router.post('/address', requireQuizComplete, addAddress);
-router.delete('/address/:addressId', requireQuizComplete, deleteAddress);
+router.post('/address', addAddress);
+router.delete('/address/:addressId', deleteAddress);
 
 // Saved Payment Methods
-router.post('/saved-card', requireQuizComplete, saveCard);
-router.post('/saved-upi', requireQuizComplete, saveUpi);
+router.post('/saved-card', saveCard);
+router.post('/saved-upi', saveUpi);
 
 // Wallet
-router.post('/wallet/add', requireQuizComplete, addMoney);
+router.post('/wallet/add', addMoney);
 
 export default router;
