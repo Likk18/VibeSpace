@@ -18,7 +18,7 @@ const JoinGroup = () => {
 
     const validateInviteCode = async () => {
         try {
-            const response = await groupAPI.joinByCode({ invite_code: inviteCode });
+            const response = await groupAPI.joinByCode(inviteCode);
             setGroupData(response.data.data);
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid or expired invite code');
