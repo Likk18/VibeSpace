@@ -61,7 +61,10 @@ export const quizAPI = {
 export const groupAPI = {
     create: (data) => api.post('/groups/create', data),
     join: (groupId) => api.post(`/groups/${groupId}/join`),
-    joinByCode: (inviteCode) => api.post('/groups/join-by-code', { invite_code: inviteCode }),
+    joinByCode: (inviteCode) => {
+        const payload = typeof inviteCode === 'object' ? inviteCode : { invite_code: inviteCode };
+        return api.post('/groups/join-by-code', payload);
+    },
     getStatus: (groupId) => api.get(`/groups/${groupId}/status`),
     updateWeights: (groupId, weights) => api.put(`/groups/${groupId}/weights`, { weights })
 };
