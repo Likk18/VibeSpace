@@ -1,0 +1,185 @@
+{
+  "floors": {
+    "carpet": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/carpet/6aea3fa0199d723a53d7ec8dc1aab3dd.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/carpet/6efd4dcba125cfa6923fea54f69536f6.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/carpet/888e3d8586d00d4e62ac578b82d3e2aa.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/carpet/b852400d92f9b0b21b9a1761bcb4f3cd.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/carpet/c21895638329018b0706728df82a20d1.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/carpet/cfae71468cf1f01c396dd4ad2c67d090.jpg"
+    ],
+    "concrete": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/concrete/0415c9c79233443dd561750c6765093e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/concrete/67d041790f6ce7529e2e2a8d618d9090.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/concrete/740192cf088d2a1998369981ed8f75eb.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/concrete/858795ba86a7bed6e0a02d6b7bb06800.jpg"
+    ],
+    "hardwood": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/09fe2e1b2833350d756b347e46cbf684.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/0e1fc751486d22e9eb75875a44aad86b.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/1c913e292b22dc925c5c6f2c438f5e56.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/2b6cdd325c65b3ebd48f332b8be2ed5d.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/921292967322edcef04e25b5897bc8f3.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/bc2f69ef5c2fec009b73bbe2670eec8e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/hardwood/be472cadba550f362e6a59cac14c1220.jpg"
+    ],
+    "laminate": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/laminate/24e01e2be16d66e3600d344835834cbc.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/laminate/5b57935ae4601dfc5cd2e92dce875b92.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/laminate/9154197acaf15ce5375f357d064676f5.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/laminate/dff339c2e04818fbd01192e7bd92af5b.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/laminate/e9410b2cc9c663e5e00ed0fd60764280.jpg"
+    ],
+    "tile": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/tile/29611d54f298ae2103a5ce25f3cbe728.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/tile/3066a53555e4ada621f6e00c84b732de.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/tile/4881b317e76a8c608ecc0a0c8f1ce093.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/tile/884a475cca8056bfd3ec56968dbae7e2.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/floors/tile/bf9d9f0d221abea22ded1f32710921a9.jpg"
+    ]
+  },
+  "room_scenes": {
+    "bathroom": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/bathroom/7e862125a897812c73cb91c50e4da06b.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/bathroom/bc2071c390841723ac47698bd2f6583b.jpg"
+    ],
+    "bedroom": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/bedroom/68e854c8f11cabacf95029d7973eae1e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/bedroom/e2c6f4717465628137f5dfc5e0967bb1.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/bedroom/e9eeebaf6f69ca0b1b675cc1cb97ca70.jpg"
+    ],
+    "kitchen": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/kitchen/5e8c13823538b5df428398d4cc4688f2.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/kitchen/61981b903ad26a9faba05aaaefebe0c0.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/kitchen/659c4172bba957ba3272cd38326d5216.jpg"
+    ],
+    "living_room": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/living_room/3b0608207fe9c9da32e88bda9925d221.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/living_room/627c48c2aeb8baa36a6775c72dfe0c6a.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/living_room/fef415b39cb2bfa9b51e7dead8caf511.jpg"
+    ],
+    "office": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/office/6aa35bf2f131cfa0c3550ee5217163f6.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/room_scenes/office/7c1f09027410875bd13734ada480c67e.jpg"
+    ]
+  },
+  "solid_colors": {
+    "beige": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/beige/2158f374ffab311bc4c2aa02044465b1.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/beige/3679f322b26198b791f6b21558495480.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/beige/7e848491c1b075a178814a2c124c44d1.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/beige/d7fa770c8cf2314dcc476a9aa5f11476.jpg"
+    ],
+    "light_gray": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/light_gray/65d9086ab54b779c10b5982f2d57bcf4.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/light_gray/711789077a5a111c9d9442cb1b6d9d40.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/light_gray/aee1623039d2639b6aaa27b46b76fa72.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/light_gray/fc24ef63ef100a645d37895be56b84e8.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/light_gray/ff54cd4e7587a762843dd07d9c6ea1d1.jpg"
+    ],
+    "sage_green": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/sage_green/3a0cf6bb3023b85e7b632b9df3091de0.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/sage_green/6ca17becd63e16dd7a6c4a947e134c75.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/sage_green/93dedd7c0d5fabc029ad59f9aa72647f.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/sage_green/bc97e416d988fa5fc9be173c760b1f4a.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/sage_green/bcb3a1596ea50384adfbd2be46c5fb55.jpg"
+    ],
+    "soft_blue": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/soft_blue/5a87b6d7c4424f9cee1e3268b7ff7f13.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/soft_blue/93d4894108f20113d737c6cb448d6e51.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/soft_blue/d4ebcce77cb26c5d257612fe7fddcb96.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/soft_blue/e3b8366b9f8729cfc7f9c7d9de05c61b.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/soft_blue/ef384290566b5a4d83e724f5e7a99985.jpg"
+    ],
+    "white": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/white/0d1817db418b90c98572c2a489b891c8.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/white/3d083f2b2fe464f04f6957d5ce810ec7.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/solid_colors/white/bbff693042adf3f5e1f4adf29965634f.jpg"
+    ]
+  },
+  "surfaces": {
+    "bathroom_vanity": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/bathroom_vanity/3a8186d9e2ca44e68459a6e0ecf67258.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/bathroom_vanity/5b23967a8704a5c1fdd599c0684d1b1d.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/bathroom_vanity/abf52a9fa5e2c493377edd72e73a1a52.jpg"
+    ],
+    "kitchen_counter": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/kitchen_counter/1e9712272bc770d86139f6cd931ecdc5.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/kitchen_counter/4f70a2be0f01919478c0774e6ea73cfe.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/kitchen_counter/b0fb28c05c8fd2ea08f14d595e66c4a0.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/kitchen_counter/b94e1595cf0fa9c88f0523caaf62b1a5.jpg"
+    ],
+    "marble": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/marble/5b23967a8704a5c1fdd599c0684d1b1d.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/marble/9dea758a539caa5221fcd8a0bfce61ef.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/marble/9fe66cea6752bd3cb957407c1c4ab80d.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/marble/afd08a4b1c71772d9b32418b5b7544c6.jpg"
+    ],
+    "office_desk": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/office_desk/1359503f78b71f5581d7084188e37f1f.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/office_desk/86449b9ef59bcbc45e490a8b561eb87f.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/office_desk/a1fe059928bbc111257aef2dcdf5a9f2.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/office_desk/cb2e1e9fb1b63d09c9a12873c490ce35.jpg"
+    ],
+    "wood_table": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/wood_table/3b0195a4caf80372fee2d749d20aeb9b.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/wood_table/70bc970a4f42af42d35a269b8a150def.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/wood_table/e563cb5d35ac7a1d4cd6f683c109e4c0.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/surfaces/wood_table/e7fcc9bc4b3a86df4fcf7b9496620f3e.jpg"
+    ]
+  },
+  "textures": {
+    "canvas": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/canvas/6916be7643ee67f229022668689938c7.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/canvas/e53356ced592c0341d534ab11a0a8ebe.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/canvas/fa8607fcfb866b5b2ef735a47a5d4c26.jpg"
+    ],
+    "fabric": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/fabric/4aabd60ecec953b55f6638c4384bf03e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/fabric/537669018a3a29697b6d05dab6ee6e7a.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/fabric/ada096ead095dba253dc6a37387f24a3.jpg"
+    ],
+    "linen": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/linen/3f94a69468aa852c69622d949c8fac5b.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/linen/87d8a9f9812d479595d6e27451860f4d.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/linen/d3acd2e39b8c5cac5e6fef0c96c729fc.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/linen/faad9dbe0c1a997e2198b1825d8c7b10.jpg"
+    ],
+    "paper": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/paper/143c6f78a870f6d052d7292f1e162ddb.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/paper/5b583f77fd79526e1582c87f121f2e28.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/textures/paper/c12f3b1d55c8740f6b3748f7f275f40e.jpg"
+    ]
+  },
+  "walls": {
+    "brick": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/brick/219c4ad63ece993df972c26c52e0d3ae.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/brick/bbd14ba26301e21379d1d3c35d42c018.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/brick/c4e329d911383da84bb797f2b2d7d0b5.jpg"
+    ],
+    "painted": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/painted/1e0a120b14f9e75ef50a7d0223c607b9.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/painted/41b864fd4ac80d50895efde8015eba9e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/painted/bcbb4547d8939f9138a7423553ba18fa.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/painted/c245fd4d052ded892e9ee41ef286dedf.jpg"
+    ],
+    "textured": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/textured/67d0b2c172387d723dbac8b237d35953.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/textured/777b375d509b98d560fb86d9a28047c1.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/textured/a48dc882e0ed093d2391cac13376d51e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/textured/c0801293eee65f83ca8f7833a3ed73cd.jpg"
+    ],
+    "wallpaper": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/wallpaper/0b90aa7cf314a5f3d4f527dc7f3317ea.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/wallpaper/86da6a572d9d34bc2c94413de7ac884e.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/wallpaper/f040673c62929bfe16d531e0ec9c6af1.jpg"
+    ],
+    "white_minimal": [
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/white_minimal/4fe1bfd35bb67cf550105a77d815ab5a.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/white_minimal/938fa1b29d7be0aa087436d8afb58552.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/white_minimal/cae44fff84aa24a7f6e96777356fb2f9.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/white_minimal/d098181cee6d38131dcd171a41ee13b7.jpg",
+      "https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets/Backgrounds/Backgrounds/walls/white_minimal/f711103ae3f532f254ed0a9372088dbb.jpg"
+    ]
+  }
+}

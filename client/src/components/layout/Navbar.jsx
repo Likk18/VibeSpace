@@ -1,0 +1,269 @@
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
+import { useState, useRef, useEffect } from 'react';
+
+const CDN = 'https://cdn.jsdelivr.net/gh/Likk18/VibeSpace@main/client/assets';
+const logoJpg = `${CDN}/logo/logo.jpg`;
+const logoPng = `${CDN}/logo/logo.png`;
+
+const Navbar = () => {
+    const { user, isAuthenticated, logout } = useAuth();
+    const { profile, personalizationOn, togglePersonalization, cart, wishlist, feedMode, setFeedMode } = useProfile();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const menuRef = useRef(null);
+    const location = useLocation();
+
+    const isLanding = location.pathname === '/';
+    const isBrowsingProducts = location.pathname === '/dashboard' || location.pathname.startsWith('/product');
+    const isGroupMode = user?.mode === 'group';
+
+    // Use PNG for white/frosted backgrounds, JPG for transparent hero background
+    const currentLogo = isLanding && !scrolled ? logoJpg : logoPng;
+
+    // Fade-in on mount
+    useEffect(() => {
+        const t = setTimeout(() => setVisible(true), 100);
+        return () => clearTimeout(t);
+    }, []);
+
+    // Scroll-aware navbar
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 80);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleToggle = async () => {
+        try { await togglePersonalization(); } catch (err) { console.error('Toggle failed:', err); }
+    };
+
+    const navBg = isLanding
+        ? (scrolled ? 'glass shadow-sm' : 'bg-transparent')
+        : 'glass shadow-sm';
+
+    const textColor = isLanding && !scrolled ? 'text-white' : 'text-dark';
+    const linkHover = isLanding && !scrolled ? 'hover:text-cream' : 'hover:text-primary';
+
+    const navLinks = [
+        { label: 'home', href: '#hero' },
+        { label: 'about us', href: '#about' },
+        { label: 'gallery', href: '#gallery' },
+        { label: 'contact', href: '#contact' },
+    ];
+
+    return (
+        <nav
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${navBg}`}
+            style={{ opacity: visible ? 1 : 0 }}
+        >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-16">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center space-x-2">
+                        <img src={currentLogo} alt="VibeSpace" className="h-8 w-8 rounded-full object-cover" />
+                        <span className={`text-xl font-display font-bold tracking-wide ${textColor}`}>
+                            VIBESPACE
+                        </span>
+                    </Link>
+
+                    {/* Center Nav Links (landing only, desktop) */}
+                    {isLanding && (
+                        <div className="hidden md:flex items-center space-x-8">
+                            {navLinks.map(link => (
+                                <a
+                                    key={link.label}
+                                    href={link.href}
+                                    className={`text-sm font-medium lowercase tracking-wider transition-colors duration-300 ${textColor} ${linkHover}`}
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Style label for dashboard */}
+                    {!isLanding && isAuthenticated && profile && isBrowsingProducts && (
+                        <div className="hidden md:flex items-center space-x-4">
+                            <div className="style-chip text-base">{profile.style_label}</div>
+                        </div>
+                    )}
+
+                    {/* Right Side */}
+                    <div className="flex items-center space-x-4">
+                        {isAuthenticated ? (
+                            <>
+                                {isBrowsingProducts && (
+                                    <>
+                                        <button
+                                            onClick={handleToggle}
+                                            className={`hidden sm:block px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${personalizationOn
+                                                ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                                                : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                                                }`}
+                                        >
+                                            Personalization: {personalizationOn ? 'ON' : 'OFF'}
+                                        </button>
+                                        
+                                        {isGroupMode && personalizationOn && (
+                                            <div className="hidden sm:flex items-center space-x-1 bg-surface rounded-full p-1">
+                                                <button
+                                                    onClick={() => setFeedMode('personal')}
+                                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${feedMode === 'personal'
+                                                        ? 'bg-primary text-white'
+                                                        : 'text-gray-400 hover:text-white'
+                                                        }`}
+                                                >
+                                                    My Style
+                                                </button>
+                                                <button
+                                                    onClick={() => setFeedMode('group')}
+                                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${feedMode === 'group'
+                                                        ? 'bg-primary text-white'
+                                                        : 'text-gray-400 hover:text-white'
+                                                        }`}
+                                                >
+                                                    Group Mix
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+
+                                {/* Wishlist & Cart */}
+                                <div className="hidden sm:flex items-center space-x-4 pr-4 border-r border-primary/10">
+                                    <Link to="/wishlist" className={`relative transition-colors duration-300 flex items-center ${textColor} ${linkHover}`}>
+                                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                        {(wishlist?.length > 0) && (
+                                            <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{wishlist.length}</span>
+                                        )}
+                                    </Link>
+                                    <Link to="/cart" className={`relative transition-colors duration-300 flex items-center ${textColor} ${linkHover}`}>
+                                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        {(cart?.length > 0) && (
+                                            <span className="absolute -top-2 -right-2 bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{cart.length}</span>
+                                        )}
+                                    </Link>
+                                </div>
+
+                                {/* User dropdown */}
+                                <div className="flex items-center space-x-3 relative" ref={menuRef}>
+                                    <span className={`text-sm hidden sm:inline ${textColor}`}>{user.name}</span>
+                                    <button
+                                        onClick={() => setMenuOpen(!menuOpen)}
+                                        className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center hover:bg-primary/30 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                    >
+                                        <span className="font-bold">{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
+                                    </button>
+
+                                    {menuOpen && (
+                                        <div className="absolute right-0 top-12 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden z-50 border border-primary/5" style={{ transformOrigin: 'top right' }}>
+                                            <div className="py-1">
+                                                <div className="px-4 py-3 border-b border-cream">
+                                                    <p className="text-sm font-medium text-dark truncate">{user.email || 'My Account'}</p>
+                                                </div>
+                                                {[
+                                                    { to: '/settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z', label: 'Settings' },
+                                                    { to: '/orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z', label: 'Orders' },
+                                                    { to: '/security', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', label: 'Security' },
+                                                    { to: '/vibepay', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', label: 'VibePay' },
+                                                    { to: '/faq', icon: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', label: 'FAQ' },
+                                                ].map(item => (
+                                                    <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}
+                                                        className="px-4 py-2 text-sm text-dark/80 hover:bg-cream/60 flex items-center transition-colors duration-300">
+                                                        <svg className="w-4 h-4 mr-3 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
+                                                        </svg>
+                                                        {item.label}
+                                                    </Link>
+                                                ))}
+                                                <div className="border-t border-cream mt-1">
+                                                    <button onClick={() => { setMenuOpen(false); logout(); }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center transition-colors duration-300">
+                                                        <svg className="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                                        </svg>
+                                                        Logout
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {/* Login/Signup for guests */}
+                                <div className="hidden md:flex items-center space-x-3">
+                                    <Link to="/login" className={`text-sm font-medium transition-colors duration-300 ${textColor} ${linkHover}`}>
+                                        Login
+                                    </Link>
+                                    <Link to="/register" className="bg-primary text-white text-sm px-5 py-2 rounded-lg font-medium hover:bg-primary/90 transition-all duration-300">
+                                        Sign Up
+                                    </Link>
+                                </div>
+
+                                {/* Burger menu */}
+                                <button
+                                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                    className={`md:hidden p-2 transition-colors duration-300 ${textColor}`}
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {mobileMenuOpen ? (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        ) : (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                        )}
+                                    </svg>
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+                <div className="md:hidden glass border-t border-primary/5">
+                    <div className="px-4 py-4 space-y-3">
+                        {isLanding && navLinks.map(link => (
+                            <a key={link.label} href={link.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block text-sm font-medium text-dark/80 hover:text-primary py-2 transition-colors duration-300">
+                                {link.label}
+                            </a>
+                        ))}
+                        <div className="border-t border-primary/5 pt-3 flex flex-col space-y-2">
+                            <Link to="/login" onClick={() => setMobileMenuOpen(false)}
+                                className="text-sm font-medium text-dark/80 hover:text-primary py-2 transition-colors duration-300">
+                                Login
+                            </Link>
+                            <Link to="/register" onClick={() => setMobileMenuOpen(false)}
+                                className="bg-primary text-white text-sm px-5 py-2 rounded-lg font-medium text-center hover:bg-primary/90 transition-all duration-300">
+                                Sign Up
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
+};
+
+export default Navbar;

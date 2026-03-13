@@ -1,0 +1,584 @@
+/* VibeSpace Checkout — Warm Cream & Brown Theme */
+
+/* ---- Container ---- */
+.checkout-container {
+    min-height: 100vh;
+    background-color: #F5EFE6; /* same as bg-background */
+    color: #3D1F0D;
+    font-family: inherit;
+}
+
+/* ---- Header ---- */
+.checkout-header {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(139, 99, 71, 0.12);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.checkout-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #8B6347;
+    font-family: 'Playfair Display', serif;
+    cursor: pointer;
+}
+
+.secure-tag {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #8B6347;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ---- Layout ---- */
+.checkout-main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .checkout-main {
+        grid-template-columns: 3fr 1.1fr;
+    }
+}
+
+/* ---- Sections ---- */
+.checkout-section {
+    background: #ffffff;
+    border: 1px solid rgba(139, 99, 71, 0.12);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(139, 99, 71, 0.06);
+    transition: box-shadow 0.2s;
+}
+
+.checkout-section:hover {
+    box-shadow: 0 4px 20px rgba(139, 99, 71, 0.1);
+}
+
+.section-collapsed {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.section-expanded {
+    padding: 1.5rem 1.75rem;
+}
+
+.section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #3D1F0D;
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.section-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #8B6347;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.change-link {
+    color: #8B6347;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.change-link:hover {
+    color: #6d4e37;
+    text-decoration: underline;
+}
+
+/* ---- Address ---- */
+.address-item {
+    padding: 1rem 1.25rem;
+    border: 1.5px solid rgba(139, 99, 71, 0.15);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #faf7f4;
+    color: #3D1F0D;
+}
+
+.address-item:hover {
+    border-color: rgba(139, 99, 71, 0.4);
+    box-shadow: 0 2px 10px rgba(139, 99, 71, 0.08);
+}
+
+.address-item.selected {
+    border-color: #8B6347;
+    background: rgba(139, 99, 71, 0.05);
+    box-shadow: 0 2px 12px rgba(139, 99, 71, 0.12);
+}
+
+.address-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    background: rgba(139, 99, 71, 0.1);
+    color: #8B6347;
+}
+
+.address-tag.home {
+    background: rgba(139, 99, 71, 0.18);
+    color: #6d4e37;
+}
+
+/* ---- Payment methods ---- */
+.payment-methods-container {
+    border: 1.5px solid rgba(139, 99, 71, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fdfdfd;
+}
+
+.pay-method-section {
+    border-bottom: 1px solid rgba(139, 99, 71, 0.08);
+    transition: background 0.2s;
+}
+
+.pay-method-section:last-child {
+    border-bottom: none;
+}
+
+.pay-method-section.expanded {
+    background: rgba(139, 99, 71, 0.03);
+}
+
+.pay-method-header {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.pay-method-header:hover {
+    background: rgba(139, 99, 71, 0.04);
+}
+
+.pay-method-info { flex: 1; min-width: 0; }
+
+.pay-method-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #3D1F0D;
+    margin-bottom: 0.1rem;
+}
+
+.pay-method-sub {
+    font-size: 0.8rem;
+    color: #9c8070;
+}
+
+.pay-insufficient {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.pay-method-body {
+    padding: 0 1.25rem 1.25rem 3.25rem;
+}
+
+.pay-info-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+.pay-info-banner.warning {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    color: #92400e;
+}
+
+/* ---- Card brand pills ---- */
+.card-brands {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.card-brand {
+    font-size: 0.55rem;
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    letter-spacing: 0.02em;
+}
+
+.card-brand.visa { background: #1a1f71; color: #fff; }
+.card-brand.mc   { background: #eb001b; color: #fff; }
+.card-brand.rupay{ background: #2e7d32; color: #fff; }
+.card-brand.amex { background: #006fcf; color: #fff; }
+
+/* ---- Card form ---- */
+.card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9c8070;
+    margin-bottom: 0.25rem;
+}
+
+/* ---- Radio ---- */
+.radio-btn {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(139, 99, 71, 0.35);
+    border-radius: 50%;
+    margin-top: 2px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.radio-btn:checked {
+    border-color: #8B6347;
+}
+
+.radio-btn:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 9px;
+    height: 9px;
+    background: #8B6347;
+    border-radius: 50%;
+}
+
+/* ---- Section headings & dividers ---- */
+.pay-section-heading {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #9c8070;
+    padding: 0.75rem 1.25rem 0;
+    border-top: 1px solid rgba(139, 99, 71, 0.08);
+}
+
+.pay-section-divider {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #9c8070;
+    padding: 0.75rem 1.25rem;
+    background: rgba(139, 99, 71, 0.02);
+    border-top: 1px solid rgba(139, 99, 71, 0.08);
+    border-bottom: 1px solid rgba(139, 99, 71, 0.08);
+}
+
+.save-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #9c8070;
+}
+
+.save-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #8B6347;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* ---- Sidebar ---- */
+.sidebar-summary {
+    position: sticky;
+    top: 5.5rem;
+    height: fit-content;
+}
+
+.summary-card {
+    background: #ffffff;
+    border: 1.5px solid rgba(139, 99, 71, 0.12);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(139, 99, 71, 0.08);
+}
+
+/* ---- Primary action button (VibeSpace style) ---- */
+.amazon-btn-primary {
+    width: 100%;
+    background-color: #8B6347;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    box-shadow: 0 4px 14px rgba(139, 99, 71, 0.3);
+}
+
+.amazon-btn-primary:hover:not(:disabled) {
+    background-color: #74513b;
+    box-shadow: 0 6px 20px rgba(139, 99, 71, 0.4);
+    transform: scale(1.02);
+}
+
+.amazon-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.amazon-btn-secondary {
+    width: 100%;
+    background: rgba(139, 99, 71, 0.06);
+    color: #8B6347;
+    border: 1.5px solid rgba(139, 99, 71, 0.2);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.amazon-btn-secondary:hover {
+    background: rgba(139, 99, 71, 0.12);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: #6b523d;
+    margin-bottom: 0.5rem;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #3D1F0D;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(139, 99, 71, 0.15);
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(61, 31, 13, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.modal-window {
+    background: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 18px;
+    border: 1px solid rgba(139, 99, 71, 0.15);
+    box-shadow: 0 25px 60px rgba(61, 31, 13, 0.2);
+    color: #3D1F0D;
+}
+
+.input-field {
+    width: 100%;
+    background: #faf7f4;
+    border: 1.5px solid rgba(139, 99, 71, 0.2);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    color: #3D1F0D;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.input-field:focus {
+    border-color: #8B6347;
+    box-shadow: 0 0 0 3px rgba(139, 99, 71, 0.1);
+}
+
+.input-field::placeholder {
+    color: #c4a896;
+}
+
+/* ---- OTP Inputs ---- */
+.otp-input {
+    width: 56px;
+    height: 64px;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    border: 2px solid rgba(139, 99, 71, 0.2);
+    border-radius: 12px;
+    background: #faf7f4;
+    color: #3D1F0D;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: #8B6347;
+}
+
+.otp-input:focus {
+    border-color: #8B6347;
+    box-shadow: 0 0 0 3px rgba(139, 99, 71, 0.15);
+}
+
+@keyframes otpShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 50%, 90% { transform: translateX(-4px); }
+    30%, 70% { transform: translateX(4px); }
+}
+
+.otp-shake { animation: otpShake 0.4s ease-in-out; }
+
+/* ---- Payment Spinner ---- */
+.payment-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(139, 99, 71, 0.15);
+    border-top: 3px solid #8B6347;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* ---- QR pulse ---- */
+.qr-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.5); }
+}
+
+/* ---- OTP Toast Notification ---- */
+.otp-toast {
+    position: fixed;
+    top: -120px;
+    right: 1.5rem;
+    z-index: 999;
+    width: 340px;
+    transition: top 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+.otp-toast.visible {
+    top: 1.5rem;
+    pointer-events: auto;
+}
+
+.otp-toast-inner {
+    background: rgba(255, 251, 247, 0.97);
+    border: 1px solid rgba(139, 99, 71, 0.2);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 10px 40px rgba(61, 31, 13, 0.15);
+    backdrop-filter: blur(20px);
+}
+
+.otp-toast-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.otp-toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(139, 99, 71, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.otp-toast-sender {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #3D1F0D;
+    flex: 1;
+}
+
+.otp-toast-time {
+    font-size: 0.7rem;
+    color: #9c8070;
+}
+
+.otp-toast-text {
+    font-size: 0.8rem;
+    color: #6b523d;
+    line-height: 1.4;
+    margin: 0;
+}
