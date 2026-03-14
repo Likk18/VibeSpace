@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    recently_viewed: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
     addresses: [{
         name: String,
         street: String,

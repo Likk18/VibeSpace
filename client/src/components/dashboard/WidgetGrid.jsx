@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 
-const WidgetGrid = ({ products = [] }) => {
+const WidgetGrid = ({ products = [], widgetData = {} }) => {
     const { user, isAuthenticated } = useAuth();
     const { profile, personalizationOn } = useProfile();
     
-    // Fallback product logic for widgets
-    const featuredProducts = products.length >= 4 ? products.slice(0, 4) : [];
-    const newArrivals = products.filter(p => true).slice(0, 4); // In a real app we'd filter by date
-    const offers = products.filter(p => p.original_price > p.price).slice(0, 4);
+    // Use data from props with logical fallbacks
+    const recentlyViewed = widgetData.recentlyViewed?.length > 0 ? widgetData.recentlyViewed.slice(0, 4) : products.slice(0, 4);
+    const newArrivals = widgetData.newArrivals?.length > 0 ? widgetData.newArrivals : products.slice(4, 8);
+    const deals = widgetData.deals?.length > 0 ? widgetData.deals : products.filter(p => p.old_price > p.price).slice(0, 4);
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 sm:-mt-24 md:-mt-32 relative z-20 mb-8">
@@ -18,11 +18,11 @@ const WidgetGrid = ({ products = [] }) => {
                 {/* Widget 1: Keep Shopping / Welcome */}
                 <div className="bg-surface rounded-xl shadow-lg border border-white/10 p-5 flex flex-col h-[380px] hover:border-primary/50 transition-colors">
                     <h2 className="text-xl font-display font-bold mb-4">
-                        {isAuthenticated ? `Keep shopping for ${profile?.primary_style || 'Furniture'}` : 'Welcome to VibeSpace'}
+                        {isAuthenticated ? `Keep shopping for ${profile?.style_label || 'Your Style'}` : 'Welcome to VibeSpace'}
                     </h2>
                     
                     <div className="grid grid-cols-2 gap-2 flex-grow mb-4">
-                        {featuredProducts.map((p, idx) => (
+                        {recentlyViewed.map((p, idx) => (
                             <div key={idx} className="bg-background rounded overflow-hidden aspect-square">
                                 <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
                             </div>
@@ -61,17 +61,20 @@ const WidgetGrid = ({ products = [] }) => {
                     </div>
                     
                     <div className="grid grid-cols-2 gap-2 flex-grow mb-4">
-                        {offers.length > 0 ? offers.map((p, idx) => (
-                            <div key={idx} className="bg-background rounded flex flex-col overflow-hidden relative group border border-[#F5EFE6]">
-                                <div className="aspect-square relative flex-grow overflow-hidden">
-                                     <img src={p.image_url} alt={p.name} className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+                        {deals.length > 0 ? deals.map((p, idx) => {
+                            const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 20;
+                            return (
+                                <div key={idx} className="bg-background rounded flex flex-col overflow-hidden relative group border border-[#F5EFE6]">
+                                    <div className="aspect-square relative flex-grow overflow-hidden">
+                                        <img src={p.image_url} alt={p.name} className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                    <div className="p-2 flex items-center justify-center gap-2 bg-[#F5EFE6]">
+                                        <span className="bg-accent text-white text-xs font-bold px-1.5 py-0.5 rounded">-{discount}%</span>
+                                        <span className="text-primary font-bold text-sm">Sale</span>
+                                    </div>
                                 </div>
-                                <div className="p-2 flex items-center justify-center gap-2 bg-[#F5EFE6]">
-                                    <span className="bg-accent text-white text-xs font-bold px-1.5 py-0.5 rounded">-20%</span>
-                                    <span className="text-primary font-bold text-sm">Sale</span>
-                                </div>
-                            </div>
-                        )) : (
+                            );
+                        }) : (
                             <div className="col-span-2 flex items-center justify-center text-primary/50 h-full">
                                 No active deals
                             </div>
@@ -84,8 +87,8 @@ const WidgetGrid = ({ products = [] }) => {
                 </div>
 
                 {/* Widget 4: Room Collections (Brown/Primary theme) */}
-                <div className="bg-primary/5 rounded-xl shadow-lg border border-primary/20 p-5 flex flex-col h-[380px] hover:border-primary/50 transition-colors">
-                    <h2 className="text-xl font-display font-bold text-[#f1f2f4] mb-4">Room Collections</h2>
+                <div className="bg-[#A07B5E] rounded-xl shadow-lg border border-primary/20 p-5 flex flex-col h-[380px] hover:border-primary/50 transition-colors">
+                    <h2 className="text-xl font-display font-bold text-white mb-4">Room Collections</h2>
                     
                     <div className="grid grid-cols-2 gap-2 flex-grow mb-4">
                          <Link to="/dashboard?category=Living Room" className="bg-background rounded overflow-hidden aspect-square relative group">

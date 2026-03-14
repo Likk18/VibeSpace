@@ -12,5 +12,6 @@ router.get('/:id', getProduct);
 
 // Protected routes
 router.get('/', protect, getProductFeed);
+router.post('/:id/view', protect, trackProductView);
 
 export default router;

@@ -73,24 +73,26 @@ const importProducts = async () => {
                 const imageUrl = row.primary_image || '';
 
                 // Price checking
-                const price = parseFloat(row.price);
-                
-                if (!isNaN(price) && row.product_name) {
-                    // Parse reviews from CSV
-                    const reviews = parseReviews(row.reviews);
+                    const price = parseFloat(row.price);
+                    const oldPrice = parseFloat(row.old_price);
                     
-                    // Calculate average rating from reviews
-                    let avgRating = 0;
-                    if (reviews.length > 0) {
-                        const totalRating = reviews.reduce((sum, r) => sum + (r.rating || 0), 0);
-                        avgRating = totalRating / reviews.length;
-                        reviewsCount++;
-                    }
+                    if (!isNaN(price) && row.product_name) {
+                        // Parse reviews from CSV
+                        const reviews = parseReviews(row.reviews);
+                        
+                        // Calculate average rating from reviews
+                        let avgRating = 0;
+                        if (reviews.length > 0) {
+                            const totalRating = reviews.reduce((sum, r) => sum + (r.rating || 0), 0);
+                            avgRating = totalRating / reviews.length;
+                            reviewsCount++;
+                        }
 
-                    const productData = {
-                        name: row.product_name,
-                        price: price,
-                        category: row.category || 'Other',
+                        const productData = {
+                            name: row.product_name,
+                            price: price,
+                            old_price: !isNaN(oldPrice) ? oldPrice : 0,
+                            category: row.category || 'Other',
                         style_tags: [style],
                         color_tag: 'multi',
                         material_tag: 'mixed',

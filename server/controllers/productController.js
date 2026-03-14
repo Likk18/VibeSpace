@@ -114,12 +114,47 @@ export const getProductFeed = async (req, res, next) => {
                     style_label: profile.style_label,
                     primary_style: profile.primary_style,
                     secondary_style: profile.secondary_style
+                },
+                widgets: {
+                    recentlyViewed: user.recently_viewed || [],
+                    newArrivals: await Product.find({ in_stock: true }).sort({ createdAt: -1 }).limit(4),
+                    deals: await Product.find({ old_price: { $gt: 0 }, in_stock: true })
+                        .sort({ rating: -1 })
+                        .limit(20)
+                        .then(products => products.filter(p => p.old_price > p.price).slice(0, 4))
                 }
             }
         });
     } catch (error) {
         const timestamp = new Date().toISOString();
         console.error(`[${timestamp}] [ERROR] GetProductFeed failed | Error: ${error.message} | Stack: ${error.stack}`);
+        next(error);
+    }
+};
+
+/**
+ * @route   POST /api/products/:id/view
+ * @desc    Track product view for "Recently Viewed"
+ * @access  Private
+ */
+export const trackProductView = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const productId = req.params.id;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+        // Update recently_viewed: remove if exists, then unshift to start
+        let recentlyViewed = user.recently_viewed.filter(id => id.toString() !== productId);
+        recentlyViewed.unshift(productId);
+        
+        // Limit to 8 items
+        user.recently_viewed = recentlyViewed.slice(0, 8);
+        await user.save();
+
+        res.json({ success: true, recently_viewed: user.recently_viewed });
+    } catch (error) {
         next(error);
     }
 };

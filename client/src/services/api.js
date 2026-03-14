@@ -103,7 +103,8 @@ export const productsAPI = {
         return api.get('/products/search', { params: { ...rest, page, limit } });
     },
     getCategories: () => api.get('/products/categories'),
-    getFilterOptions: () => api.get('/products/filters')
+    getFilterOptions: () => api.get('/products/filters'),
+    trackView: (id) => api.post(`/products/${id}/view`)
 };
 
 // Orders API

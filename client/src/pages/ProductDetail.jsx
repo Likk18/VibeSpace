@@ -26,6 +26,8 @@ const ProductDetail = () => {
                 setError(null);
                 const res = await productsAPI.getProduct(id);
                 setProduct(res.data.data.product);
+                // Track view for "Recently Viewed"
+                productsAPI.trackView(id).catch(err => console.error('Failed to track view:', err));
             } catch (err) {
                 console.error('Failed to load product:', err);
                 setError(err.message);
