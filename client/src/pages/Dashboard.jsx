@@ -52,7 +52,7 @@ const Dashboard = () => {
             }
         };
         loadInitialData();
-    }, [feedMode]);
+    }, [feedMode, personalizationOn]);
 
     const fetchProducts = async (page = 1, append = false, activeFilters = filters) => {
         if (append) {
