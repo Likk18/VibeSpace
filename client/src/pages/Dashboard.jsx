@@ -18,7 +18,6 @@ const Dashboard = () => {
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, hasMore: false });
     const [showFilters, setShowFilters] = useState(false);
     const [mainLoading, setMainLoading] = useState(true);
-    const [widgetData, setWidgetData] = useState({ recentlyViewed: [], newArrivals: [], deals: [] });
 
     const [filters, setFilters] = useState({
         search: '',
@@ -46,7 +45,6 @@ const Dashboard = () => {
                 setFilterOptions(filterRes.data.data || { designers: [] });
                 setProducts(feedRes.data.data.products || []);
                 setPagination(feedRes.data.pagination || { page: 1, totalPages: 1, hasMore: false });
-                setWidgetData(feedRes.data.data.widgets || { recentlyViewed: [], newArrivals: [], deals: [] });
             } catch (error) {
                 console.error('Failed to load initial data:', error);
             } finally {
@@ -198,8 +196,6 @@ const Dashboard = () => {
         <div className="min-h-screen bg-background pt-16 pb-12">
             {/* Zone 2: Category Nav Strip */}
             <CategoryNav />
-            {/* Zone 3: Widget Grid */}
-            <WidgetGrid products={products} widgetData={widgetData} />
 
             {/* Amazon-Style Home Zones (Only shown if NO search/active filters) */}
             {!hasActiveFilters && (
@@ -207,7 +203,10 @@ const Dashboard = () => {
                     {/* Zone 3: Hero Carousel */}
                     <HeroCarousel />
                     
-                    {/* Zone 4: Moved to top for better visibility */}
+                    {/* Zone 4: Personalized 4-Widget Grid */}
+                    <div className="relative z-20">
+                        <WidgetGrid products={products} />
+                    </div>
 
                     {/* Zone 5: New Arrivals Horizontal Scroll */}
                     <HorizontalProductScroll 
