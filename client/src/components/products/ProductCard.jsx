@@ -36,7 +36,7 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                 )}
 
                 {/* Wishlist Dropdown */}
-                <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                <div className="absolute top-3 left-3 opacity-0 group-hover/image:opacity-100 transition-opacity z-20">
                     <WishlistDropdown
                         productId={product._id}
                         onAdd={addToWishlist}
@@ -45,14 +45,14 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                 </div>
 
                 {/* Buy Now & Cart Actions */}
-                <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover/image:opacity-100 transition-opacity z-10 transition-transform translate-y-2 group-hover/image:translate-y-0 duration-300">
                     {/* Cart Button */}
                     <button
                         onClick={async (e) => {
                             e.preventDefault();
                             await addToCart(product._id);
                         }}
-                        className={`bg-surface/90 backdrop-blur-sm p-2 rounded-full shadow-lg transition-all ${isInCart ? 'text-primary' : 'text-gray-300 hover:text-primary'}`}
+                        className={`bg-surface/90 backdrop-blur-sm p-2 rounded-full shadow-lg transition-all ${isInCart ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}
                         title="Add to Cart"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +66,7 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                             e.preventDefault();
                             navigate('/checkout', { state: { product } });
                         }}
-                        className="bg-primary text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center"
+                        className="bg-primary text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center"
                     >
                         Buy Now
                     </button>
