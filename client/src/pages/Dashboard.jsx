@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext';
 import { productsAPI } from '../services/api';
 import ProductGrid from '../components/products/ProductGrid';
@@ -8,6 +9,7 @@ import WidgetGrid from '../components/dashboard/WidgetGrid';
 import HorizontalProductScroll from '../components/dashboard/HorizontalProductScroll';
 
 const Dashboard = () => {
+    const location = useLocation();
     const { profile, personalizationOn, feedMode } = useProfile();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -52,7 +54,7 @@ const Dashboard = () => {
         loadInitialData();
     }, [feedMode]);
 
-    const fetchProducts = async (page = 1, append = false) => {
+    const fetchProducts = async (page = 1, append = false, activeFilters = filters) => {
         if (append) {
             setLoadingMore(true);
         } else {
@@ -63,15 +65,22 @@ const Dashboard = () => {
             const params = {
                 page,
                 limit: 12,
-                ...(filters.search && { q: filters.search }),
-                ...(filters.category.length > 0 && { category: filters.category.join(',') }),
-                ...(filters.designers.length > 0 && { designer: filters.designers.join(',') }),
-                ...(filters.minPrice && { minPrice: filters.minPrice }),
-                ...(filters.maxPrice && { maxPrice: filters.maxPrice }),
-                ...(filters.newArrivals && { newArrivals: true })
+                ...(activeFilters.search && { q: activeFilters.search }),
+                ...(activeFilters.category.length > 0 && { category: activeFilters.category.join(',') }),
+                ...(activeFilters.designers.length > 0 && { designer: activeFilters.designers.join(',') }),
+                ...(activeFilters.minPrice && { minPrice: activeFilters.minPrice }),
+                ...(activeFilters.maxPrice && { maxPrice: activeFilters.maxPrice }),
+                ...(activeFilters.newArrivals && { newArrivals: true })
             };
 
-            const response = hasActiveFilters 
+            const filtersActive = Object.entries(activeFilters).some(
+                ([key, val]) => {
+                    if (key === 'newArrivals') return val === true;
+                    return Array.isArray(val) ? val.length > 0 : val;
+                }
+            );
+
+            const response = filtersActive 
                 ? await productsAPI.search(params)
                 : await productsAPI.getFeed(feedMode, page, 12);
 
@@ -93,6 +102,32 @@ const Dashboard = () => {
             setLoadingMore(false);
         }
     };
+
+    // Handle URL query changes (from Category Nav or Widgets)
+    useEffect(() => {
+        // Skip on initial mount since loadInitialData runs anyway,
+        // but if there are filters in URL, we want to catch them.
+        const query = new URLSearchParams(location.search);
+        const filterStr = query.get('filter');
+        const catStr = query.get('category');
+        
+        // If no query params exist, we don't need to override
+        if (!filterStr && !catStr && !location.search) return;
+
+        setFilters(prev => {
+            const next = {
+                ...prev,
+                category: catStr ? [catStr] : [],
+                newArrivals: filterStr === 'new'
+            };
+            
+            // Only fetch if it actually changed to prevent double-fetch on mount
+            if (JSON.stringify(prev) !== JSON.stringify(next)) {
+                fetchProducts(1, false, next);
+            }
+            return next;
+        });
+    }, [location.search]);
 
     const handleSearch = async (e) => {
         e.preventDefault();

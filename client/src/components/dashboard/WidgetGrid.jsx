@@ -88,25 +88,25 @@ const WidgetGrid = ({ products = [] }) => {
                     <h2 className="text-xl font-display font-bold text-[#f1f2f4] mb-4">Room Collections</h2>
                     
                     <div className="grid grid-cols-2 gap-2 flex-grow mb-4">
-                         <Link to="/category/living-room" className="bg-background rounded overflow-hidden aspect-square relative group">
+                         <Link to="/dashboard?category=Living Room" className="bg-background rounded overflow-hidden aspect-square relative group">
                             <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                             <div className="absolute inset-0 flex items-end p-2 bg-gradient-to-t from-black/80 to-transparent">
                                 <span className="text-xs font-medium text-white shadow-sm">Living</span>
                             </div>
                          </Link>
-                         <Link to="/category/bedroom" className="bg-background rounded overflow-hidden aspect-square relative group">
+                         <Link to="/dashboard?category=Bedroom" className="bg-background rounded overflow-hidden aspect-square relative group">
                             <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                             <div className="absolute inset-0 flex items-end p-2 bg-gradient-to-t from-black/80 to-transparent">
                                 <span className="text-xs font-medium text-white shadow-sm">Bedroom</span>
                             </div>
                          </Link>
-                         <Link to="/category/kitchen" className="bg-background rounded overflow-hidden aspect-square relative group">
+                         <Link to="/dashboard?category=Kitchen" className="bg-background rounded overflow-hidden aspect-square relative group">
                             <img src="https://images.unsplash.com/photo-1556910103-1c02745a872f?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                             <div className="absolute inset-0 flex items-end p-2 bg-gradient-to-t from-black/80 to-transparent">
                                 <span className="text-xs font-medium text-white shadow-sm">Kitchen</span>
                             </div>
                          </Link>
-                         <Link to="/category/decor" className="bg-background rounded overflow-hidden aspect-square relative group">
+                         <Link to="/dashboard?category=Decor" className="bg-background rounded overflow-hidden aspect-square relative group">
                             <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                             <div className="absolute inset-0 flex items-end p-2 bg-gradient-to-t from-black/80 to-transparent">
                                 <span className="text-xs font-medium text-white shadow-sm">Decor</span>

@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 
 const categories = [
-    { id: 1, name: 'Living Room', path: '/category/living-room' },
-    { id: 2, name: 'Bedroom', path: '/category/bedroom' },
-    { id: 3, name: 'Dining', path: '/category/dining' },
-    { id: 4, name: 'Kitchen', path: '/category/kitchen' },
-    { id: 5, name: 'Decor', path: '/category/decor' },
-    { id: 6, name: 'Lighting', path: '/category/lighting' },
-    { id: 7, name: 'Outdoor', path: '/category/outdoor' },
-    { id: 8, name: 'Sale', path: '/category/sale', isHighlight: true }
+    { id: 1, name: 'Living Room', path: '/dashboard?category=Living Room' },
+    { id: 2, name: 'Bedroom', path: '/dashboard?category=Bedroom' },
+    { id: 3, name: 'Dining', path: '/dashboard?category=Dining' },
+    { id: 4, name: 'Kitchen', path: '/dashboard?category=Kitchen' },
+    { id: 5, name: 'Decor', path: '/dashboard?category=Decor' },
+    { id: 6, name: 'Lighting', path: '/dashboard?category=Lighting' },
+    { id: 7, name: 'Outdoor', path: '/dashboard?category=Outdoor' },
+    { id: 8, name: 'Sale', path: '/dashboard?filter=sale', isHighlight: true }
 ];
 
 const CategoryNav = () => {
