@@ -2,6 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useProfile } from '../context/ProfileContext';
 import { productsAPI } from '../services/api';
 import ProductGrid from '../components/products/ProductGrid';
+import CategoryNav from '../components/dashboard/CategoryNav';
+import HeroCarousel from '../components/dashboard/HeroCarousel';
+import WidgetGrid from '../components/dashboard/WidgetGrid';
+import HorizontalProductScroll from '../components/dashboard/HorizontalProductScroll';
 
 const Dashboard = () => {
     const { profile, personalizationOn, feedMode } = useProfile();
@@ -154,22 +158,49 @@ const Dashboard = () => {
     }, [loadMore]);
 
     return (
-        <div className="min-h-screen bg-background pt-24 pb-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-display font-bold text-dark mb-2">
-                        {personalizationOn && profile ? `Your ${profile.style_label} Feed` : 'All Products'}
-                    </h1>
-                    <p className="text-gray-600">
-                        {personalizationOn && profile
-                            ? feedMode === 'group' 
-                                ? `Group blend - Curated for everyone`
-                                : 'Curated just for your aesthetic'
-                            : 'Browse our full collection'
-                        }
-                    </p>
-                </div>
+        <div className="min-h-screen bg-background pt-16 pb-12">
+            {/* Zone 2: Category Nav Strip */}
+            <CategoryNav />
+
+            {/* Amazon-Style Home Zones (Only shown if NO search/active filters) */}
+            {!hasActiveFilters && (
+                <>
+                    {/* Zone 3: Hero Carousel */}
+                    <HeroCarousel />
+                    
+                    {/* Zone 4: Personalized 4-Widget Grid */}
+                    <div className="relative z-20">
+                        <WidgetGrid products={products} />
+                    </div>
+
+                    {/* Zone 5: New Arrivals Horizontal Scroll */}
+                    <HorizontalProductScroll 
+                        title="New Arrivals" 
+                        products={products.slice(0, 10)} 
+                        theme="emerald" 
+                    />
+
+                    {/* Zone 6: Offers/Deals Horizontal Scroll */}
+                    <HorizontalProductScroll 
+                        title="Today's Deals" 
+                        products={products.slice(10, 20)} 
+                        theme="amber" 
+                    />
+                </>
+            )}
+
+            <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${!hasActiveFilters ? 'mt-8' : 'mt-8'}`}>
+                {/* Header (Only show for filtered browsing) */}
+                {hasActiveFilters && (
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-display font-bold text-dark mb-2">
+                            {personalizationOn && profile ? `Your ${profile.style_label} Feed` : 'All Products'}
+                        </h1>
+                        <p className="text-gray-600">
+                            Search Results and Filtered Browsing
+                        </p>
+                    </div>
+                )}
 
                 {/* Filter Toggle */}
                 <div className="flex justify-between items-center mb-4">
