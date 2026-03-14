@@ -1,14 +1,17 @@
 import { Link } from 'react-router-dom';
 
 const categories = [
-    { id: 1, name: 'Living Room', path: '/dashboard?category=Living Room' },
+    { id: 1, name: 'Bathroom', path: '/dashboard?category=Bathroom' },
     { id: 2, name: 'Bedroom', path: '/dashboard?category=Bedroom' },
-    { id: 3, name: 'Dining', path: '/dashboard?category=Dining' },
-    { id: 4, name: 'Kitchen', path: '/dashboard?category=Kitchen' },
-    { id: 5, name: 'Decor', path: '/dashboard?category=Decor' },
-    { id: 6, name: 'Lighting', path: '/dashboard?category=Lighting' },
-    { id: 7, name: 'Outdoor', path: '/dashboard?category=Outdoor' },
-    { id: 8, name: 'Sale', path: '/dashboard?filter=sale', isHighlight: true }
+    { id: 3, name: 'Children', path: '/dashboard?category=Children' },
+    { id: 4, name: 'Decoration & Art', path: '/dashboard?category=Decoration & Art' },
+    { id: 5, name: 'Dining Room', path: '/dashboard?category=Dining Room' },
+    { id: 6, name: 'Hallway', path: '/dashboard?category=Hallway' },
+    { id: 7, name: 'Home Office', path: '/dashboard?category=Home Office' },
+    { id: 8, name: 'Kitchen', path: '/dashboard?category=Kitchen' },
+    { id: 9, name: 'Laundry & Cleaning', path: '/dashboard?category=Laundry & Cleaning' },
+    { id: 10, name: 'Living Room', path: '/dashboard?category=Living Room' },
+    { id: 11, name: 'Wardrobe & Storage', path: '/dashboard?category=Wardrobe & Storage' }
 ];
 
 const CategoryNav = () => {
