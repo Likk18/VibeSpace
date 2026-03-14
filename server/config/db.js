@@ -46,8 +46,15 @@ const connectDB = async () => {
         console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
     } catch (error) {
         isConnected = false;
-        console.warn(`⚠️ MongoDB Atlas failed (${error.message}). Falling back to in-memory database...`);
+        console.error(`❌ MongoDB Atlas Connection Error: ${error.message}`);
 
+        // DO NOT fall back to in-memory DB in production/Vercel, as it will timeout and crash
+        if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+            console.error('⚠️ Cannot use in-memory database in production. Ensure MONGO_URI is correct and IP is whitelisted.');
+            return; // Exit the function, let the API run but routes will fail gracefully if they check DB state
+        }
+
+        console.warn(`Falling back to in-memory database...`);
         try {
             const mongoServer = await MongoMemoryServer.create();
             const mongoUri = mongoServer.getUri();
@@ -59,7 +66,7 @@ const connectDB = async () => {
             attachConnectionEvents();
             console.log(`✅ MongoDB In-Memory Connected: ${mongoose.connection.host}`);
         } catch (err) {
-            console.error(`❌ MongoDB Connection Error: ${err.message}`);
+            console.error(`❌ MongoDB Memory Server Error: ${err.message}`);
             process.exit(1);
         }
     }

@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import passport from './config/passport.js';
@@ -28,17 +29,20 @@ dotenv.config();
 import QuizQuestion from './models/QuizQuestion.js';
 import seedDatabase from './scripts/seedDataset.js';
 
-// Connect to MongoDB
-await connectDB();
-
+// Connect to MongoDB and run initial checks
 try {
-    const quizCount = await QuizQuestion.countDocuments();
-    if (quizCount === 0) {
-        console.log('No quiz questions found, automatically running seed script...');
-        await seedDatabase();
+    await connectDB();
+    
+    // Only try to seed if we are actually connected
+    if (mongoose.connection.readyState === 1) {
+        const quizCount = await QuizQuestion.countDocuments();
+        if (quizCount === 0) {
+            console.log('No quiz questions found, automatically running seed script...');
+            await seedDatabase();
+        }
     }
 } catch (error) {
-    console.error('Failed to run initial seed verification:', error);
+    console.error('⚠️ Fatal error during server initialization:', error.message);
 }
 
 // Initialize Express app
