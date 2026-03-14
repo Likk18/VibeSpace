@@ -10,6 +10,8 @@
 
 .carousel-track {
   display: flex;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .carousel-item {
@@ -18,12 +20,12 @@
   flex-shrink: 0;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-end;
   border: 1px solid #8B6914;
   border-radius: calc(var(--outer-r) - var(--p-distance));
   background-color: #3D2517;
   overflow: hidden;
-  cursor: grab;
+  cursor: inherit;
 }
 
 .carousel-item:active {
