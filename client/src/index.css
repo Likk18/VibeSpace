@@ -79,8 +79,7 @@
     color: #3D1F0D;
   }
   .input:focus {
-    @apply outline-none ring-2;
-    ring-color: rgba(139, 99, 71, 0.4);
+    @apply outline-none ring-2 ring-[#8B6347]/40;
     border-color: #8B6347;
   }
   .input::placeholder {

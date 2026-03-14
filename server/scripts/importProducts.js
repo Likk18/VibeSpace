@@ -87,19 +87,11 @@ const importProducts = async () => {
                         reviewsCount++;
                     }
 
-                    const oldPrice = parseFloat(row.old_price);
-                    const tags = [];
-                    if (row.offer && row.offer !== 'FALSE') tags.push('offers');
-                    if (oldPrice > price) tags.push('offers');
-                    if (row.new_arrival === 'TRUE') tags.push('new_arrival');
-
                     const productData = {
                         name: row.product_name,
                         price: price,
-                        original_price: !isNaN(oldPrice) ? oldPrice : price,
                         category: row.category || 'Other',
                         style_tags: [style],
-                        tags: [...new Set(tags)],
                         color_tag: 'multi',
                         material_tag: 'mixed',
                         image_url: imageUrl,

@@ -76,14 +76,6 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    original_price: {
-        type: Number,
-        default: 0
-    },
-    tags: [{
-        type: String,
-        index: true
-    }],
     source: {
         type: String,
         default: 'kaggle_amazon'

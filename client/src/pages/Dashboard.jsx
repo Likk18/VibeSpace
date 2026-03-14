@@ -18,8 +18,6 @@ const Dashboard = () => {
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, hasMore: false });
     const [showFilters, setShowFilters] = useState(false);
     const [mainLoading, setMainLoading] = useState(true);
-    const [newArrivalsProducts, setNewArrivalsProducts] = useState([]);
-    const [offersProducts, setOffersProducts] = useState([]);
 
     const [filters, setFilters] = useState({
         search: '',
@@ -38,19 +36,15 @@ const Dashboard = () => {
         const loadInitialData = async () => {
             try {
                 setMainLoading(true);
-                const [categoriesRes, filterRes, feedRes, newArrivalsRes, offersRes] = await Promise.all([
+                const [categoriesRes, filterRes, feedRes] = await Promise.all([
                     productsAPI.getCategories(),
                     productsAPI.getFilterOptions(),
-                    productsAPI.getFeed(feedMode, 1, 12),
-                    productsAPI.search({ newArrivals: true, limit: 12 }),
-                    productsAPI.search({ tag: 'offers', limit: 12 })
+                    productsAPI.getFeed(feedMode, 1, 12)
                 ]);
                 setCategories(categoriesRes.data.data.categories || []);
                 setFilterOptions(filterRes.data.data || { designers: [] });
                 setProducts(feedRes.data.data.products || []);
                 setPagination(feedRes.data.pagination || { page: 1, totalPages: 1, hasMore: false });
-                setNewArrivalsProducts(newArrivalsRes.data.data.products || []);
-                setOffersProducts(offersRes.data.data.products || []);
             } catch (error) {
                 console.error('Failed to load initial data:', error);
             } finally {
@@ -217,14 +211,14 @@ const Dashboard = () => {
                     {/* Zone 5: New Arrivals Horizontal Scroll */}
                     <HorizontalProductScroll 
                         title="New Arrivals" 
-                        products={newArrivalsProducts} 
+                        products={products.slice(0, 10)} 
                         theme="cream" 
                     />
-                    
+
                     {/* Zone 6: Offers/Deals Horizontal Scroll */}
                     <HorizontalProductScroll 
                         title="Today's Deals" 
-                        products={offersProducts} 
+                        products={products.slice(10, 20)} 
                         theme="white" 
                     />
                 </>

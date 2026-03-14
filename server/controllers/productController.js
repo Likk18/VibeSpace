@@ -196,11 +196,6 @@ export const searchProducts = async (req, res, next) => {
             query.color_tag = colors.length === 1 ? color : { $in: colors };
         }
 
-        if (req.query.tag) {
-            const tags = req.query.tag.split(',').map(t => t.trim());
-            query.tags = { $in: tags };
-        }
-
         if (material) {
             const materials = material.split(',').map(m => m.trim());
             query.material_tag = materials.length === 1 ? material : { $in: materials };
