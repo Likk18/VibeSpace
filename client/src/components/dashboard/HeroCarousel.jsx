@@ -76,12 +76,12 @@ const HeroCarousel = () => {
                             <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-2 max-w-xl">
                                 {slide.title}
                             </h2>
-                            <p className="text-xl text-gray-200 mb-6 font-light max-w-md">
+                            <p className="text-xl text-[#F5EFE6] mb-6 font-light max-w-md">
                                 {slide.subtitle}
                             </p>
                             <Link 
                                 to={slide.link}
-                                className="bg-[#FF9900] hover:bg-[#E38900] text-dark font-bold py-3 px-8 rounded-full w-max mt-2 transition-colors shadow-lg"
+                                className="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg w-max mt-2 transition-all duration-300 shadow-lg"
                             >
                                 {slide.cta}
                             </Link>

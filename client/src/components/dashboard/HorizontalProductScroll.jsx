@@ -16,28 +16,28 @@ const HorizontalProductScroll = ({ title, products = [], theme = 'dark' }) => {
 
     // Theme configurations
     const themeConfig = {
-        dark: {
-            bg: 'bg-surface',
-            text: 'text-white',
+        primary: {
+            bg: 'bg-primary/5',
+            text: 'text-dark',
             linkColor: 'text-primary hover:text-primary/80',
-            buttonBg: 'bg-black/50 hover:bg-black/80',
-            border: 'border-white/5'
+            buttonBg: 'bg-white hover:bg-background text-primary',
+            border: 'border-primary/10'
         },
-        emerald: {
-            bg: 'bg-teal-900',
-            text: 'text-teal-50',
-            linkColor: 'text-teal-200 hover:text-teal-100',
-            buttonBg: 'bg-teal-950/50 hover:bg-teal-950/80',
-            border: 'border-teal-800'
+        cream: {
+            bg: 'bg-[#F5EFE6]',
+            text: 'text-dark',
+            linkColor: 'text-primary hover:text-primary/80',
+            buttonBg: 'bg-white hover:bg-background text-primary',
+            border: 'border-[#C4956A]/20'
         },
-        amber: {
-            bg: 'bg-amber-900',
-            text: 'text-amber-50',
-            linkColor: 'text-amber-200 hover:text-amber-100',
-            buttonBg: 'bg-amber-950/50 hover:bg-amber-950/80',
-            border: 'border-amber-800'
+        white: {
+            bg: 'bg-white',
+            text: 'text-dark',
+            linkColor: 'text-primary hover:text-primary/80',
+            buttonBg: 'bg-background hover:bg-[#F5EFE6] text-primary',
+            border: 'border-primary/10'
         }
-    }[theme] || themeConfig.dark;
+    }[theme] || themeConfig.white;
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
@@ -45,8 +45,8 @@ const HorizontalProductScroll = ({ title, products = [], theme = 'dark' }) => {
                 <div className="flex justify-between items-baseline mb-4">
                     <h2 className={`text-2xl font-display font-bold ${themeConfig.text} flex items-center gap-3`}>
                         {title}
-                        {theme === 'emerald' && <span className="bg-teal-500 text-white text-[10px] uppercase px-2 py-0.5 rounded-sm shadow-sm">New</span>}
-                        {theme === 'amber' && <span className="text-[#F3A847] text-xl">★</span>}
+                        {theme === 'cream' && <span className="bg-primary text-white text-[10px] uppercase px-2 py-0.5 rounded-sm shadow-sm">New</span>}
+                        {theme === 'white' && <span className="text-accent text-xl font-sans font-bold">%</span>}
                     </h2>
                     <Link to="/dashboard" className={`${themeConfig.linkColor} text-sm font-medium hover:underline`}>
                         See all →
@@ -81,8 +81,8 @@ const HorizontalProductScroll = ({ title, products = [], theme = 'dark' }) => {
                                     alt={p.name} 
                                     className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300" 
                                 />
-                                {theme === 'amber' && (
-                                    <div className="absolute top-0 right-0 m-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow-md z-10">
+                                {theme === 'white' && (
+                                    <div className="absolute top-0 right-0 m-2 bg-accent text-white text-xs font-bold px-2 py-1 rounded shadow-md z-10">
                                         -20% OFF
                                     </div>
                                 )}

@@ -26,16 +26,16 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-105"
                 />
 
-                {/* Amazon-style Badges */}
+                {/* VibeSpace-style Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
                     {product.tags && product.tags.includes('new_arrival') && (
-                        <span className="bg-teal-700 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm w-max">New Arrival</span>
+                        <span className="bg-primary text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm w-max">New Arrival</span>
                     )}
                     {product.tags && product.tags.includes('bestseller') && (
-                        <span className="bg-[#E47911] text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm w-max">Best Seller</span>
+                        <span className="bg-accent text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm w-max">Best Seller</span>
                     )}
                     {product.tags && product.tags.includes('limited') && (
-                        <span className="bg-red-700 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm w-max">Limited Time</span>
+                        <span className="bg-[#3D1F0D] text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm w-max">Limited Time</span>
                     )}
                 </div>
 
@@ -67,7 +67,7 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                         className={`w-full py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center justify-center gap-2 transition-colors ${
                             isInCart 
                                 ? 'bg-surface text-primary border border-primary' 
-                                : 'bg-[#FF9900] hover:bg-[#E38900] text-dark'
+                                : 'bg-primary hover:bg-primary/90 text-white'
                         }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,14 +114,14 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                             {Array.from({ length: 5 }).map((_, i) => (
                                 <svg
                                     key={i}
-                                    className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? 'text-[#FFA41C]' : 'text-gray-300'}`}
+                                    className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? 'text-primary' : 'text-gray-300'}`}
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
                                 >
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                             ))}
-                            <span className="text-xs text-[#007185] hover:text-[#C7511F] hover:underline cursor-pointer ml-1">
+                            <span className="text-xs text-primary/80 hover:text-primary hover:underline cursor-pointer ml-1">
                                 {(product.rating_count || Math.floor(product.rating * 42)).toLocaleString()}
                             </span>
                         </div>

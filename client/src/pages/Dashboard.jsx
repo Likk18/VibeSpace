@@ -177,14 +177,14 @@ const Dashboard = () => {
                     <HorizontalProductScroll 
                         title="New Arrivals" 
                         products={products.slice(0, 10)} 
-                        theme="emerald" 
+                        theme="cream" 
                     />
 
                     {/* Zone 6: Offers/Deals Horizontal Scroll */}
                     <HorizontalProductScroll 
                         title="Today's Deals" 
                         products={products.slice(10, 20)} 
-                        theme="amber" 
+                        theme="white" 
                     />
                 </>
             )}

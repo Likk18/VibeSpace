@@ -34,51 +34,51 @@ const WidgetGrid = ({ products = [] }) => {
                     </Link>
                 </div>
 
-                {/* Widget 2: New Arrivals (Teal theme) */}
-                <div className="bg-emerald-950/30 rounded-xl shadow-lg border border-emerald-900/50 p-5 flex flex-col h-[380px] hover:border-emerald-500/50 transition-colors">
+                {/* Widget 2: New Arrivals (Accent theme) */}
+                <div className="bg-[#F5EFE6] rounded-xl shadow-lg border border-[#C4956A]/30 p-5 flex flex-col h-[380px] hover:border-primary/50 transition-colors">
                     <div className="flex items-center gap-2 mb-4">
-                        <h2 className="text-xl font-display font-bold text-emerald-50">New Arrivals</h2>
-                        <span className="bg-emerald-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm">New</span>
+                        <h2 className="text-xl font-display font-bold text-dark">New Arrivals</h2>
+                        <span className="bg-primary text-white text-[10px] uppercase font-medium px-2 py-0.5 rounded-sm">New</span>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-2 flex-grow mb-4">
                         {newArrivals.map((p, idx) => (
-                            <div key={idx} className="bg-emerald-900/50 rounded overflow-hidden aspect-square relative group">
-                                <img src={p.image_url} alt={p.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                            <div key={idx} className="bg-white rounded overflow-hidden aspect-square relative group">
+                                <img src={p.image_url} alt={p.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
                             </div>
                         ))}
                     </div>
                     
-                    <Link to="/dashboard?filter=new" className="text-emerald-400 hover:text-emerald-300 hover:underline text-sm font-medium mt-auto">
+                    <Link to="/dashboard?filter=new" className="text-primary hover:text-primary/80 hover:underline text-sm font-medium mt-auto">
                         View all →
                     </Link>
                 </div>
 
-                {/* Widget 3: Offers / Deals (Amber theme) */}
-                <div className="bg-amber-950/30 rounded-xl shadow-lg border border-amber-900/50 p-5 flex flex-col h-[380px] hover:border-amber-500/50 transition-colors">
+                {/* Widget 3: Offers / Deals (Brown theme) */}
+                <div className="bg-white rounded-xl shadow-lg border border-primary/20 p-5 flex flex-col h-[380px] hover:border-primary/60 transition-colors">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-display font-bold text-amber-50">Offers & Deals</h2>
+                        <h2 className="text-xl font-display font-bold text-dark">Offers & Deals</h2>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-2 flex-grow mb-4">
                         {offers.length > 0 ? offers.map((p, idx) => (
-                            <div key={idx} className="bg-amber-900/50 rounded flex flex-col overflow-hidden relative group">
+                            <div key={idx} className="bg-background rounded flex flex-col overflow-hidden relative group border border-[#F5EFE6]">
                                 <div className="aspect-square relative flex-grow overflow-hidden">
-                                     <img src={p.image_url} alt={p.name} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                     <img src={p.image_url} alt={p.name} className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                                <div className="p-2 flex items-center justify-center gap-2 bg-amber-950/50">
-                                    <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">-20%</span>
-                                    <span className="text-red-500 font-bold text-sm">Deal</span>
+                                <div className="p-2 flex items-center justify-center gap-2 bg-[#F5EFE6]">
+                                    <span className="bg-accent text-white text-xs font-bold px-1.5 py-0.5 rounded">-20%</span>
+                                    <span className="text-primary font-bold text-sm">Sale</span>
                                 </div>
                             </div>
                         )) : (
-                            <div className="col-span-2 flex items-center justify-center text-amber-500/50 h-full">
+                            <div className="col-span-2 flex items-center justify-center text-primary/50 h-full">
                                 No active deals
                             </div>
                         )}
                     </div>
                     
-                    <Link to="/dashboard?filter=sale" className="text-amber-400 hover:text-amber-300 hover:underline text-sm font-medium mt-auto">
+                    <Link to="/dashboard?filter=sale" className="text-primary hover:text-primary/80 hover:underline text-sm font-medium mt-auto">
                         See all offers →
                     </Link>
                 </div>
