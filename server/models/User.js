@@ -18,8 +18,17 @@ const userSchema = new mongoose.Schema({
     },
     password_hash: {
         type: String,
-        required: [true, 'Password is required'],
+        required: false,
         select: false // Don't include password in queries by default
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    avatar: {
+        type: String,
+        default: ''
     },
     mode: {
         type: String,

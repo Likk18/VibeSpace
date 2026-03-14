@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import passport from './config/passport.js';
+import session from 'express-session';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,6 +93,15 @@ app.use('/api/', limiter);
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Passport and Session middleware
+app.use(session({
+    secret: process.env.JWT_SECRET || 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // API Routes
 app.use('/api/auth', authRoutes);
