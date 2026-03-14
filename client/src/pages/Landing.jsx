@@ -290,22 +290,21 @@ const Landing = () => {
             </section>
 
             {/* ═══════════════════════════ 6. REVIEWS ═══════════════════════════ */}
-            {/* ═══════════════════════════ 6. REVIEWS ═══════════════════════════ */}
-            <section ref={reviewsRef} className="scroll-reveal py-20 sm:py-28 bg-white overflow-hidden">
+            <section ref={reviewsRef} className="scroll-reveal py-20 sm:py-28 bg-white overflow-hidden w-full">
                 <div className="max-w-7xl mx-auto px-6 sm:px-12">
                     <h2 className="text-4xl sm:text-5xl font-display font-bold text-center mb-16" style={{ color: '#3D1F0D' }}>
                         What Our Clients Say
                     </h2>
 
-                    <div className="relative">
+                    <div className="relative overflow-hidden w-full">
                         <div
-                            className="flex transition-transform duration-700 ease-in-out"
+                            className="flex transition-transform duration-700 ease-in-out w-[200%] sm:w-auto"
                             style={{ transform: `translateX(-${reviewIdx * 50}%)` }}
                         >
                             {/* Doubling the array to allow for a smoother loop feel, though simple index wrap is used */}
                             {reviewImages.map((img, i) => (
-                                <div key={i} className="flex-shrink-0 w-full sm:w-1/2 px-4 h-[450px] sm:h-[600px] flex items-center justify-center">
-                                    <div className="w-full h-full overflow-hidden">
+                                <div key={i} className="flex-shrink-0 w-1/2 sm:w-1/2 px-2 sm:px-4 h-[300px] sm:h-[600px] flex items-center justify-center">
+                                    <div className="w-full h-full">
                                         <img
                                             src={img}
                                             alt={`Review ${i + 1}`}
@@ -317,12 +316,12 @@ const Landing = () => {
                         </div>
 
                         {/* Pagination dots (simplified to blocks/groups of 2) */}
-                        <div className="flex justify-center mt-12 space-x-2">
+                        <div className="flex justify-center mt-8 sm:mt-12 space-x-2 flex-wrap gap-y-2">
                             {reviewImages.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setReviewIdx(i)}
-                                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === reviewIdx ? 'bg-primary scale-125' : 'bg-primary/20'}`}
+                                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${i === reviewIdx ? 'bg-primary scale-125' : 'bg-primary/20'}`}
                                 />
                             ))}
                         </div>
