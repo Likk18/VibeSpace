@@ -35,6 +35,13 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                     </div>
                 )}
 
+                {/* Sale Badge */}
+                {product.tags?.includes('offers') && (
+                    <div className="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-20 animate-pulse">
+                        DEAL
+                    </div>
+                )}
+
                 {/* Wishlist Dropdown */}
                 <div className="absolute top-3 left-3 opacity-0 group-hover/image:opacity-100 transition-opacity z-20">
                     <WishlistDropdown
@@ -91,9 +98,16 @@ const ProductCard = ({ product, showMatchScore = false }) => {
                 )}
 
                 <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xl font-bold text-dark">
-                        ${(product.price || 0).toFixed(2)}
-                    </span>
+                    <div className="flex flex-col">
+                        <span className="text-xl font-bold text-dark">
+                            ₹{(product.price || 0).toFixed(2)}
+                        </span>
+                        {product.original_price > product.price && (
+                            <span className="text-xs text-gray-400 line-through">
+                                ₹{(product.original_price || 0).toFixed(2)}
+                            </span>
+                        )}
+                    </div>
 
                     {product.rating > 0 && (
                         <div className="flex items-center space-x-1">
