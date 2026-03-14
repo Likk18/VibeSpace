@@ -60,6 +60,19 @@ const Landing = () => {
         return () => clearInterval(t);
     }, []);
 
+    // ——— Responsive Gallery Width ———
+    const [galWidth, setGalWidth] = useState(500);
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            // Provide padding for mobile devices
+            setGalWidth(width < 550 ? width - 48 : 500);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     // ——— New Arrivals Slideshow ———
     const [naSlide, setNaSlide] = useState(0);
     useEffect(() => {
@@ -186,9 +199,10 @@ const Landing = () => {
                     </div>
 
                     {/* Right — CircularGallery */}
-                    <div style={{ height: '500px', position: 'relative' }}>
+                    <div className="flex justify-center w-full overflow-hidden rounded-2xl" style={{ height: '500px', position: 'relative' }}>
                         <CircularGallery
                             items={circularItems}
+                            baseWidth={galWidth}
                             bend={1}
                             textColor="#ffffff"
                             borderRadius={0.5}
