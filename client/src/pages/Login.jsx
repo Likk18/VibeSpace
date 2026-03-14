@@ -37,7 +37,9 @@ const Login = () => {
     };
 
     const handleGoogleRedirect = () => {
-        window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`;
+        const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+        const baseUrl = isProd ? `${window.location.origin}/api` : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+        window.location.href = `${baseUrl}/auth/google`;
     };
 
     const handleChange = (e) => {

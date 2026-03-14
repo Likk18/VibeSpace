@@ -6,10 +6,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    // In Vercel serverless, relative paths can sometimes resolve to HTTP instead of HTTPS. Construct full URL if in prod.
+    const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+    const serverUrl = isProd && process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : (process.env.SERVER_URL || 'http://localhost:5000');
+        
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "/api/auth/google/callback"
+        callbackURL: `${serverUrl}/api/auth/google/callback`
     },
     async (accessToken, refreshToken, profile, done) => {
         try {
